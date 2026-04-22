@@ -1,0 +1,37 @@
+{
+  "aberto": false,
+  "historico": [
+    {
+      "valor_inicial": 200.0,
+      "total_vendas": 0,
+      "total_sangria": 13.01,
+      "total_suprimento": 5.01,
+      "esperado": 192.0,
+      "contado": 0.0,
+      "diferenca": -192.0,
+      "n_vendas": 0,
+      "por_pagamento": {},
+      "operador_abertura": "Administrador",
+      "operador_fechamento": "Administrador",
+      "data_abertura": "2026-04-16T23:36:45.218546",
+      "data_fechamento": "2026-04-16T23:37:24.693401",
+      "movimentacoes": [
+        {
+          "tipo": "sangria",
+          "valor": 13.01,
+          "motivo": "6",
+          "operador": "Administrador",
+          "data": "2026-04-16T23:37:07.692552"
+        },
+        {
+          "tipo": "suprimento",
+          "valor": 5.01,
+          "motivo": "63",
+          "operador": "Administrador",
+          "data": "2026-04-16T23:37:18.914857"
+        }
+      ]
+    }
+  ],
+  "abertura": {}
+}

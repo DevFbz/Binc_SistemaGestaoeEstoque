@@ -1,0 +1,18 @@
+[
+  {
+    "sale_id": "1f8b956f-101b-44a4-b8d2-cb766df4bd77",
+    "customer_name": "Consumidor Final",
+    "phone": "21993668459",
+    "status": "enviado",
+    "id": "1e6905b1-4ff9-4081-8c6a-5afd2c8eb004",
+    "date": "2026-04-16T23:34:01.428021"
+  },
+  {
+    "sale_id": "Venda no PDV",
+    "customer_name": "Maria Santos Oliveira",
+    "phone": "(21) 91234-5678",
+    "status": "enviado",
+    "id": "a43ef8d0-98c8-4c7c-be55-309201cfcc0e",
+    "date": "2026-04-18T15:27:28.823423"
+  }
+]

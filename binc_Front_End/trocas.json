@@ -1,0 +1,72 @@
+[
+  {
+    "id": "12d8260f-6d88-4309-a10a-e6cd2b3d6ad7",
+    "product_id": "f2aefec1-1ddf-4711-bfcb-95ee82471274",
+    "product_name": "Filtro de Combustivel",
+    "product_code": "FLT003",
+    "quantity": 1,
+    "motivo": "Avaria",
+    "sale_id": "1f8b956f-101b-44a4-b8d2-cb766df4bd77",
+    "customer_name": "Consumidor Final",
+    "date": "2026-04-16T23:35:25.923409",
+    "status": "descartado",
+    "unit_price": 40.0,
+    "updated_at": "2026-04-17T00:09:29.911101"
+  },
+  {
+    "id": "f41707f0-c223-4bd2-bc5d-12dd6b270217",
+    "product_id": "f2aefec1-1ddf-4711-bfcb-95ee82471274",
+    "product_name": "Filtro de Combustivel",
+    "product_code": "FLT003",
+    "quantity": 1,
+    "motivo": "Avaria",
+    "sale_id": "1f8b956f-101b-44a4-b8d2-cb766df4bd77",
+    "customer_name": "Consumidor Final",
+    "date": "2026-04-16T23:36:02.966285",
+    "status": "descartado",
+    "unit_price": 40.0,
+    "updated_at": "2026-04-17T00:09:37.294968"
+  },
+  {
+    "id": "1b188d0b-e6b7-4dde-8b53-a8c12d72d38c",
+    "product_id": "f2aefec1-1ddf-4711-bfcb-95ee82471274",
+    "product_name": "Filtro de Combustivel",
+    "product_code": "FLT003",
+    "quantity": 2,
+    "motivo": "Defeito",
+    "sale_id": "1f8b956f-101b-44a4-b8d2-cb766df4bd77",
+    "customer_name": "Consumidor Final",
+    "date": "2026-04-16T23:40:16.552792",
+    "status": "Descarte",
+    "unit_price": 40.0,
+    "updated_at": "2026-04-17T00:09:32.166751"
+  },
+  {
+    "id": "98361b14-eae0-43a8-b63b-70a4315d6b6a",
+    "product_id": "f2aefec1-1ddf-4711-bfcb-95ee82471274",
+    "product_name": "Filtro de Combustivel",
+    "product_code": "FLT003",
+    "quantity": 1,
+    "motivo": "Avaria",
+    "sale_id": "22022e0b-1aef-45f6-9b1f-2a7ab101a5f4",
+    "customer_name": "Consumidor Final",
+    "date": "2026-04-16T23:42:14.506784",
+    "status": "descartado",
+    "unit_price": 40.0,
+    "updated_at": "2026-04-17T00:09:34.907193"
+  },
+  {
+    "id": "12dda97d-332d-4a0e-9d1a-16c054498329",
+    "product_id": "2af9c696-8072-41ca-983c-14d08cf28328",
+    "product_name": "Filtro de Oleo",
+    "product_code": "FLT001",
+    "quantity": 1,
+    "motivo": "Avaria",
+    "sale_id": "38e5eff8-0322-46d9-8446-ed60dfe01c35",
+    "customer_name": "Consumidor Final",
+    "date": "2026-04-18T14:39:37.560684",
+    "status": "descartado",
+    "unit_price": 35.0,
+    "updated_at": "2026-04-18T14:39:58.263832"
+  }
+]

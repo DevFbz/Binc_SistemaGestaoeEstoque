@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode: "class",
+    theme: { extend: { colors: {
+        "surface-container-highest": "#e0e3e3", "secondary": "#3d6a00",
+        "primary": "#003336", "surface-container": "#ebeeee", "on-error-container": "#93000a",
+        "surface": "#f7fafa", "on-primary": "#ffffff", "surface-container-lowest": "#ffffff",
+        "surface-variant": "#e0e3e3", "primary-container": "#004b50", "error-container": "#ffdad6",
+        "background": "#f7fafa", "on-surface-variant": "#404849", "on-surface": "#181c1d",
+        "surface-container-low": "#f1f4f4",
+        "surface-container-high": "#e6e9e9", "error": "#ba1a1a"
+    }, fontFamily: { "headline": ["Manrope"], "body": ["Inter"] } } }
+}
+</script>
+<style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .bento-leaf { border-radius: 0.75rem 0.375rem 0.75rem 0.375rem; }
+    body::-webkit-scrollbar { width: 8px; } body::-webkit-scrollbar-thumb { background: #b1edf2; border-radius: 4px; }
+    .modal-scroll::-webkit-scrollbar { width: 6px; } .modal-scroll::-webkit-scrollbar-thumb { background: #b1edf2; border-radius: 3px; }
+    input:focus, select:focus, textarea:focus { border-color: #003336 !important; box-shadow: 0 0 0 2px rgba(0,51,54,0.08); }
+    .modal-overlay { animation: fadeIn 0.15s ease; }
+    .modal-card { animation: slideUp 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+    @keyframes slideUp { from { opacity:0; transform: translateY(12px) } to { opacity:1; transform: translateY(0) } }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased">
+<main class="px-8 py-8 min-h-screen">
+
+<!-- Header -->
+<header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+        <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Inventário</span>
+        <h1 class="text-4xl font-extrabold font-headline text-primary tracking-tight">Produtos</h1>
+    </div>
+    <div class="flex gap-3">
+        <button onclick="pyXML()" class="px-6 py-2.5 rounded-lg font-bold text-sm bg-surface-container-low text-primary hover:bg-surface-container transition-colors shadow-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">inventory_2</span> Importar XML
+        </button>
+        <button onclick="pyAdd()" class="px-6 py-2.5 rounded-lg font-bold text-sm bg-gradient-to-br from-primary to-primary-container text-on-primary hover:from-secondary hover:to-secondary-container transition-all shadow-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">add_circle</span> Novo Produto
+        </button>
+    </div>
+</header>
+
+<!-- Tools -->
+<div class="bg-surface-container-lowest p-6 bento-leaf border border-slate-200/50 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
+    <div class="relative w-full md:w-96">
+        <input type="text" id="inp_search" placeholder="Buscar por Nome, Código ou Marca..." onkeyup="doSearch(event)" class="w-full pl-10 h-10 border border-surface-variant rounded-lg focus:border-primary outline-none text-sm">
+        <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-lg">search</span>
+    </div>
+    <div class="flex gap-2 text-sm text-on-surface-variant">
+        <span id="val_count" class="font-bold">0 de 0 produtos</span>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="bg-surface-container-lowest bento-leaf border border-slate-200/50 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left table-auto min-w-[800px]">
+            <thead class="bg-surface-container-low">
+                <tr>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider w-24">Cód</th>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider">Produto / Marca</th>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider w-28">Preço R$</th>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider w-24">Estoque</th>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider w-28">Status</th>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider text-right w-36">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="table_body" class="divide-y divide-surface">
+                <!-- Injetado via Python -->
+            </tbody>
+        </table>
+    </div>
+</div>
+</main>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL: Produto (Add / Edit)                                           -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div id="modal_product" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 modal-overlay">
+    <div class="bg-background bento-leaf w-full max-w-[620px] shadow-2xl flex flex-col max-h-[92vh] modal-card">
+
+        <!-- Header -->
+        <div class="px-6 pt-6 pb-4 border-b border-surface-variant flex items-center justify-between shrink-0">
+            <div>
+                <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Inventário</span>
+                <h2 id="modal_product_title" class="text-2xl font-extrabold font-headline text-primary">Novo Produto</h2>
+            </div>
+            <button onclick="closeProductModal()" class="w-9 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors">
+                <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+        </div>
+
+        <!-- Body ScrollArea -->
+        <div class="overflow-y-auto flex-1 px-6 py-5 modal-scroll space-y-4">
+
+            <!-- Código -->
+            <div>
+                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Código *</label>
+                <input type="text" id="p_code" placeholder="Código interno ou EAN — leia o código de barras aqui" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest"/>
+            </div>
+
+            <!-- Nome -->
+            <div>
+                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Nome do Produto *</label>
+                <input type="text" id="p_name" placeholder="Nome completo do produto..." class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest"/>
+            </div>
+
+            <!-- Categoria + Marca -->
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Categoria</label>
+                    <select id="p_category" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest">
+                        <option>Filtros</option><option>Freios</option><option>Oleos</option>
+                        <option>Motor</option><option>Eletrica</option><option>Suspensao</option>
+                        <option>Arrefecimento</option><option>Transmissao</option>
+                        <option>Carroceria</option><option>Acessorios</option><option>Outros</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Marca / Fabricante</label>
+                    <input type="text" id="p_brand" placeholder="Bosch, NGK, Monroe..." class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest"/>
+                </div>
+            </div>
+
+            <!-- Unidade + Custo + Preço -->
+            <div class="grid grid-cols-3 gap-3">
+                <div>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Unidade</label>
+                    <select id="p_unit" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest">
+                        <option>UN</option><option>JG</option><option>LT</option><option>KG</option>
+                        <option>MT</option><option>CX</option><option>PC</option><option>FR</option>
+                        <option>KIT</option><option>PAR</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Custo R$</label>
+                    <input type="number" id="p_cost" placeholder="0.00" min="0" step="0.01" oninput="applyMarkup()" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest"/>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Preço Venda R$ *</label>
+                    <input type="number" id="p_price" placeholder="0.00" min="0" step="0.01" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm font-bold text-primary bg-surface-container-lowest"/>
+                </div>
+            </div>
+
+            <!-- Markup -->
+            <label class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg border border-surface-variant cursor-pointer hover:bg-surface-container transition-colors">
+                <input type="checkbox" id="p_markup" class="w-4 h-4 accent-primary rounded" onchange="applyMarkup()"/>
+                <span class="text-xs font-bold text-on-surface-variant">Aplicar Markup 30% — Preço = Custo × 1.30 (automático)</span>
+            </label>
+
+            <!-- Estoque + Mínimo -->
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Estoque Atual</label>
+                    <input type="number" id="p_stock" value="0" min="0" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest"/>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Estoque Mínimo</label>
+                    <input type="number" id="p_minstock" value="0" min="0" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest"/>
+                </div>
+            </div>
+
+            <!-- Descrição -->
+            <div>
+                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Descrição</label>
+                <textarea id="p_desc" rows="2" placeholder="Descrição opcional do produto..." class="w-full border border-surface-variant rounded-lg px-3 py-2 text-sm resize-none bg-surface-container-lowest"></textarea>
+            </div>
+
+            <!-- Dados Fiscais (colapsável) -->
+            <div class="border border-surface-variant rounded-lg overflow-hidden">
+                <button type="button" onclick="toggleFiscal()" class="w-full px-4 py-3 flex items-center justify-between text-left bg-surface-container-low hover:bg-surface-container transition-colors">
+                    <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">receipt_long</span>
+                        Dados Fiscais (NFC-e) — opcional
+                    </span>
+                    <span id="fiscal_arrow" class="material-symbols-outlined text-sm text-on-surface-variant transition-transform">expand_more</span>
+                </button>
+                <div id="fiscal_panel" class="hidden border-t border-surface-variant p-4 space-y-3 bg-surface-container-lowest">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">NCM (8 dígitos)</label>
+                            <input type="text" id="p_ncm" placeholder="Ex: 87089990" maxlength="8" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm"/>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">CFOP</label>
+                            <input type="text" id="p_cfop" value="5102" placeholder="Ex: 5102" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm"/>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">CSOSN</label>
+                            <select id="p_csosn" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest">
+                                <option value="400">400 - Não tributada (Simples)</option>
+                                <option value="102">102 - Permissão ICMS SN</option>
+                                <option value="103">103 - Isenção SN</option>
+                                <option value="300">300 - Imune</option>
+                                <option value="500">500 - ICMS cobrado</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Origem</label>
+                            <select id="p_orig" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest">
+                                <option value="0">0 - Nacional</option>
+                                <option value="1">1 - Estrangeira Importada</option>
+                                <option value="2">2 - Estrangeira Adq. Interior</option>
+                                <option value="3">3 - Nacional 40-70%</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-surface-variant flex justify-end gap-3 shrink-0 bg-surface-container-lowest/60">
+            <button onclick="closeProductModal()" class="px-5 py-2.5 rounded-lg font-bold text-sm bg-surface-container text-primary hover:bg-surface-container-high transition-colors">
+                Cancelar
+            </button>
+            <button onclick="saveProduct()" class="px-6 py-2.5 rounded-lg font-bold text-sm bg-gradient-to-br from-primary to-primary-container text-on-primary hover:from-secondary hover:to-secondary-container transition-all shadow-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">save</span> Salvar Produto
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL: XML Import Preview                                             -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div id="modal_xml" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 modal-overlay">
+    <div class="bg-background bento-leaf w-full max-w-[780px] shadow-2xl flex flex-col max-h-[88vh] modal-card">
+        <!-- Header -->
+        <div class="px-6 pt-6 pb-4 border-b border-surface-variant flex items-center justify-between shrink-0">
+            <div>
+                <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Importação NF-e</span>
+                <h2 class="text-2xl font-extrabold font-headline text-primary">Importar Estoque via XML</h2>
+            </div>
+            <button onclick="closeXmlModal()" class="w-9 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors">
+                <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+        </div>
+        <!-- Info bar -->
+        <div class="px-6 py-3 border-b border-surface-variant bg-surface-container-low shrink-0 flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-lg">inventory_2</span>
+            <span id="xml_count_lbl" class="text-sm font-bold text-on-surface-variant">Carregando itens do arquivo XML...</span>
+        </div>
+        <!-- Table -->
+        <div class="overflow-y-auto flex-1 p-4 modal-scroll">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-surface-container-low text-[10px] uppercase text-on-surface-variant sticky top-0 z-10">
+                    <tr>
+                        <th class="px-3 py-3 w-10">
+                            <input type="checkbox" id="xml_check_all" class="accent-primary w-4 h-4" onchange="toggleAllXml(this.checked)"/>
+                        </th>
+                        <th class="px-3 py-3 w-28">Código</th>
+                        <th class="px-3 py-3">Nome do Produto</th>
+                        <th class="px-3 py-3 w-16 text-center">Qtd</th>
+                        <th class="px-3 py-3 w-28 text-right">Custo Unit.</th>
+                        <th class="px-3 py-3 w-28 text-center">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="xml_tbody" class="divide-y divide-surface">
+                    <tr><td colspan="6" class="px-3 py-10 text-center text-on-surface-variant text-sm">
+                        <span class="material-symbols-outlined text-3xl block mb-2 text-primary/30">description</span>
+                        Nenhum arquivo XML carregado
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-surface-variant flex justify-between items-center shrink-0">
+            <span class="text-xs text-on-surface-variant">Marque os itens que deseja importar para o estoque.</span>
+            <div class="flex gap-3">
+                <button onclick="closeXmlModal()" class="px-5 py-2.5 rounded-lg font-bold text-sm bg-surface-container text-primary hover:bg-surface-container-high transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="confirmXml()" class="px-6 py-2.5 rounded-lg font-bold text-sm bg-[#00C853] hover:bg-[#00E676] text-white transition-all shadow-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">file_download</span> Importar Selecionados
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL: Confirmar Exclusão                                             -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div id="modal_confirm" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 modal-overlay">
+    <div class="bg-background bento-leaf w-full max-w-[420px] shadow-2xl p-6 modal-card">
+        <div class="flex items-start gap-4 mb-6">
+            <div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-error text-2xl">delete</span>
+            </div>
+            <div>
+                <h3 class="font-headline font-bold text-lg text-primary mb-1">Confirmar Exclusão</h3>
+                <p id="confirm_msg" class="text-sm text-on-surface-variant">Deseja excluir este item? Esta ação não pode ser desfeita.</p>
+            </div>
+        </div>
+        <div class="flex gap-3 justify-end">
+            <button onclick="closeConfirm()" class="px-5 py-2.5 rounded-lg font-bold text-sm bg-surface-container text-primary hover:bg-surface-container-high transition-colors">
+                Cancelar
+            </button>
+            <button id="confirm_ok_btn" class="px-5 py-2.5 rounded-lg font-bold text-sm bg-error text-white hover:opacity-90 transition-opacity flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">delete</span> Excluir
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _current_product_id = '';
+    var _pending_del_id = '';
+
+    // ───────────────────────────────── TABLE ──────────────────────────────────
+    function doSearch(e) { pySearch(); }
+    function pySearch() {
+        var q = document.getElementById('inp_search').value;
+        window.location.href = "py://action/search?q=" + encodeURIComponent(q);
+    }
+    function pyAdd() { window.location.href = "py://action/add"; }
+    function pyEdit(id) { window.location.href = "py://action/edit?id=" + encodeURIComponent(id); }
+    function pyDel(id, name) { openConfirm(id, name); }
+    function pyImg(term) { window.location.href = "py://action/img?term=" + encodeURIComponent(term); }
+    function pyXML() { window.location.href = "py://action/xml"; }
+
+    function setTableData(htmlStr, qtStr) {
+        document.getElementById('table_body').innerHTML = htmlStr;
+        document.getElementById('val_count').innerText = qtStr;
+    }
+
+    // ─────────────────────────── PRODUCT MODAL ───────────────────────────────
+    function openProductModal(data) {
+        data = data || {};
+        _current_product_id = data.id || '';
+        document.getElementById('modal_product_title').innerText = _current_product_id ? 'Editar Produto' : 'Novo Produto';
+
+        document.getElementById('p_code').value       = data.code || data.barcode || '';
+        document.getElementById('p_name').value       = data.name || '';
+        document.getElementById('p_brand').value      = data.brand || '';
+        document.getElementById('p_cost').value       = data.cost_price !== undefined ? data.cost_price : '';
+        document.getElementById('p_price').value      = data.sale_price !== undefined ? data.sale_price : '';
+        document.getElementById('p_stock').value      = data.stock !== undefined ? data.stock : 0;
+        document.getElementById('p_minstock').value   = data.min_stock !== undefined ? data.min_stock : 0;
+        document.getElementById('p_desc').value       = data.description || '';
+        document.getElementById('p_ncm').value        = data.ncm || '';
+        document.getElementById('p_cfop').value       = data.cfop || '5102';
+        document.getElementById('p_markup').checked   = false;
+
+        setSelectByValue('p_category', data.category || 'Outros');
+        setSelectByValue('p_unit',     data.unit     || 'UN');
+        setSelectByValue('p_csosn',    data.csosn    || '400');
+        setSelectByValue('p_orig',     data.orig     || '0');
+
+        showModal('modal_product');
+        setTimeout(function() { document.getElementById('p_name').focus(); }, 150);
+    }
+
+    function closeProductModal() { hideModal('modal_product'); _current_product_id = ''; }
+
+    function saveProduct() {
+        var code  = document.getElementById('p_code').value.trim();
+        var name  = document.getElementById('p_name').value.trim();
+        var price = parseFloat(document.getElementById('p_price').value) || 0;
+
+        if (!name)    { shakeField('p_name');  return; }
+        if (price <= 0) { shakeField('p_price'); return; }
+        if (!code)    { code = name.substring(0,3).toUpperCase() + '001'; document.getElementById('p_code').value = code; }
+
+        var params = new URLSearchParams({
+            id:          _current_product_id,
+            code:        code,
+            name:        name,
+            category:    document.getElementById('p_category').value,
+            brand:       document.getElementById('p_brand').value.trim(),
+            unit:        document.getElementById('p_unit').value,
+            cost_price:  document.getElementById('p_cost').value  || '0',
+            sale_price:  price,
+            stock:       document.getElementById('p_stock').value    || '0',
+            min_stock:   document.getElementById('p_minstock').value || '0',
+            description: document.getElementById('p_desc').value.trim(),
+            ncm:         document.getElementById('p_ncm').value.trim(),
+            cfop:        document.getElementById('p_cfop').value.trim() || '5102',
+            csosn:       document.getElementById('p_csosn').value,
+            orig:        document.getElementById('p_orig').value,
+        });
+        closeProductModal();
+        window.location.href = "py://action/modal_save?" + params.toString();
+    }
+
+    function toggleFiscal() {
+        var panel = document.getElementById('fiscal_panel');
+        var arrow = document.getElementById('fiscal_arrow');
+        panel.classList.toggle('hidden');
+        arrow.style.transform = panel.classList.contains('hidden') ? '' : 'rotate(180deg)';
+    }
+
+    function applyMarkup() {
+        if (document.getElementById('p_markup').checked) {
+            var cost = parseFloat(document.getElementById('p_cost').value) || 0;
+            if (cost > 0) document.getElementById('p_price').value = (cost * 1.30).toFixed(2);
+        }
+    }
+
+    // ─────────────────────────── XML MODAL ───────────────────────────────────
+    function openXmlModal(itemsHtml, count) {
+        document.getElementById('xml_count_lbl').innerText = count + ' produto(s) encontrados no arquivo XML.';
+        document.getElementById('xml_tbody').innerHTML = itemsHtml || '<tr><td colspan="6" class="px-3 py-8 text-center text-on-surface-variant">Nenhum item encontrado</td></tr>';
+        document.getElementById('xml_check_all').checked = true;
+        showModal('modal_xml');
+    }
+
+    function closeXmlModal() { hideModal('modal_xml'); }
+
+    function toggleAllXml(checked) {
+        document.querySelectorAll('.xml_item_chk').forEach(function(chk) { chk.checked = checked; });
+    }
+
+    function confirmXml() {
+        var selected = [];
+        document.querySelectorAll('.xml_item_chk').forEach(function(chk, idx) {
+            if (chk.checked) selected.push(idx);
+        });
+        if (selected.length === 0) { alert('Selecione pelo menos um item para importar.'); return; }
+        closeXmlModal();
+        window.location.href = "py://action/xml_confirm?selected=" + selected.join(',');
+    }
+
+    // ─────────────────────────── CONFIRM MODAL ───────────────────────────────
+    function openConfirm(pid, name) {
+        _pending_del_id = pid;
+        document.getElementById('confirm_msg').innerText = "Excluir o produto \"" + name + "\"? Esta ação não pode ser desfeita.";
+        document.getElementById('confirm_ok_btn').onclick = function() {
+            closeConfirm();
+            window.location.href = "py://action/del_confirm?id=" + encodeURIComponent(pid);
+        };
+        showModal('modal_confirm');
+    }
+    function closeConfirm() { hideModal('modal_confirm'); _pending_del_id = ''; }
+
+    // ─────────────────────────── UTILS ───────────────────────────────────────
+    function showModal(id) {
+        var el = document.getElementById(id);
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+    }
+    function hideModal(id) {
+        var el = document.getElementById(id);
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+    }
+    function setSelectByValue(id, val) {
+        var sel = document.getElementById(id);
+        for (var i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].value === val || sel.options[i].text === val) { sel.selectedIndex = i; return; }
+        }
+    }
+    function shakeField(id) {
+        var el = document.getElementById(id);
+        el.style.borderColor = '#ba1a1a';
+        el.focus();
+        setTimeout(function() { el.style.borderColor = ''; }, 2000);
+    }
+
+    // Fechar com Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') { closeProductModal(); closeXmlModal(); closeConfirm(); }
+    });
+    // Fechar clicando no overlay
+    ['modal_product','modal_xml','modal_confirm'].forEach(function(id) {
+        document.getElementById(id).addEventListener('click', function(e) {
+            if (e.target === this) {
+                if (id === 'modal_product') closeProductModal();
+                else if (id === 'modal_xml') closeXmlModal();
+                else closeConfirm();
+            }
+        });
+    });
+</script>
+</body></html>

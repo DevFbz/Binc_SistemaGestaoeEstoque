@@ -1,0 +1,42 @@
+[
+  {
+    "product_id": "94899596-26a6-4251-b242-754140b4f42e",
+    "product_name": "Filtro de Óleo",
+    "product_code": "FLT001",
+    "quantity": 1,
+    "motivo": "Arrependimento",
+    "sale_id": null,
+    "customer_name": "",
+    "unit_price": 35.0,
+    "id": "e9f5c10e-77d8-47df-abf1-08cf56395189",
+    "date": "2026-04-21T15:12:43.621323",
+    "status": "descartado",
+    "updated_at": "2026-04-21T15:12:51.897729"
+  },
+  {
+    "product_id": "cfad90eb-b7ca-4a9d-bdaf-1e32c9e8e5e1",
+    "product_name": "Filtro de Ar",
+    "product_code": "FLT002",
+    "quantity": 1.0,
+    "motivo": "Cancelamento de item",
+    "sale_id": "d2f63ce7-ab60-42c9-bf4c-6a3fb94604b1",
+    "customer_name": "Consumidor Final",
+    "unit_price": 45.0,
+    "id": "d5839b12-0db7-4cfb-8687-0479dbd2f882",
+    "date": "2026-04-21T16:20:53.712028",
+    "status": "pendente"
+  },
+  {
+    "product_id": "80ffbbfe-31e6-420e-9fd0-9db25b82531a",
+    "product_name": "Bateria 60Ah",
+    "product_code": "BAT001",
+    "quantity": 1.0,
+    "motivo": "Cancelamento de item",
+    "sale_id": "e9c0b62c-4a63-4dc4-bd83-b42a096626cc",
+    "customer_name": "Consumidor Final",
+    "unit_price": 450.0,
+    "id": "ca433c47-bf25-42e9-896f-5e014d99e832",
+    "date": "2026-04-21T16:31:28.210090",
+    "status": "pendente"
+  }
+]

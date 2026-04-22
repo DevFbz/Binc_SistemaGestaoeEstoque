@@ -1,0 +1,406 @@
+{
+  "products": [
+    {
+      "id": "94899596-26a6-4251-b242-754140b4f42e",
+      "code": "FLT001",
+      "name": "Filtro de Óleo",
+      "category": "Filtros",
+      "brand": "Bosch",
+      "unit": "UN",
+      "cost_price": 15.0,
+      "sale_price": 35.0,
+      "stock": 0,
+      "min_stock": 10,
+      "description": ""
+    },
+    {
+      "id": "cfad90eb-b7ca-4a9d-bdaf-1e32c9e8e5e1",
+      "code": "FLT002",
+      "name": "Filtro de Ar",
+      "category": "Filtros",
+      "brand": "Mann",
+      "unit": "UN",
+      "cost_price": 20.0,
+      "sale_price": 45.0,
+      "stock": 26.0,
+      "min_stock": 8,
+      "description": ""
+    },
+    {
+      "id": "c3a6e233-225a-4316-948d-2c2275236d76",
+      "code": "FRE001",
+      "name": "Pastilha de Freio Dianteira",
+      "category": "Freios",
+      "brand": "Bosch",
+      "unit": "JG",
+      "cost_price": 45.0,
+      "sale_price": 95.0,
+      "stock": 19.0,
+      "min_stock": 5,
+      "description": ""
+    },
+    {
+      "id": "960cd068-92b0-4208-81fd-55ddb9ce51a2",
+      "code": "FRE002",
+      "name": "Disco de Freio Dianteiro",
+      "category": "Freios",
+      "brand": "Brembo",
+      "unit": "UN",
+      "cost_price": 80.0,
+      "sale_price": 165.0,
+      "stock": 15,
+      "min_stock": 4,
+      "description": ""
+    },
+    {
+      "id": "0f2ff0e7-f76e-4d6b-855a-bb495267859b",
+      "code": "OLE001",
+      "name": "Óleo 5W30 Sintético",
+      "category": "Oleos",
+      "brand": "Castrol",
+      "unit": "LT",
+      "cost_price": 28.0,
+      "sale_price": 55.0,
+      "stock": 100,
+      "min_stock": 20,
+      "description": ""
+    },
+    {
+      "id": "5340b59a-9ead-403c-8330-6d14bd28c552",
+      "code": "OLE002",
+      "name": "Óleo 10W40 Semissintético",
+      "category": "Oleos",
+      "brand": "Mobil",
+      "unit": "LT",
+      "cost_price": 22.0,
+      "sale_price": 45.0,
+      "stock": 80,
+      "min_stock": 15,
+      "description": ""
+    },
+    {
+      "id": "e5e669fe-bcb1-43e0-90c0-0a613962131d",
+      "code": "VEL001",
+      "name": "Vela de Ignição",
+      "category": "Motor",
+      "brand": "NGK",
+      "unit": "UN",
+      "cost_price": 12.0,
+      "sale_price": 25.0,
+      "stock": 5,
+      "min_stock": 10,
+      "description": ""
+    },
+    {
+      "id": "80ffbbfe-31e6-420e-9fd0-9db25b82531a",
+      "code": "BAT001",
+      "name": "Bateria 60Ah",
+      "category": "Eletrica",
+      "brand": "Moura",
+      "unit": "UN",
+      "cost_price": 280.0,
+      "sale_price": 450.0,
+      "stock": 10.0,
+      "min_stock": 3,
+      "description": ""
+    },
+    {
+      "id": "f1bd2055-1697-4397-b4b8-c3bf87e79870",
+      "code": "ALT001",
+      "name": "Correia Alternador",
+      "category": "Motor",
+      "brand": "Dayco",
+      "unit": "UN",
+      "cost_price": 35.0,
+      "sale_price": 72.0,
+      "stock": 17.0,
+      "min_stock": 5,
+      "description": ""
+    },
+    {
+      "id": "ec298080-8086-4f8d-ab6d-5ca7d3fe19c9",
+      "code": "SUS001",
+      "name": "Amortecedor Dianteiro",
+      "category": "Suspensao",
+      "brand": "Monroe",
+      "unit": "UN",
+      "cost_price": 120.0,
+      "sale_price": 220.0,
+      "stock": 7.0,
+      "min_stock": 2,
+      "description": ""
+    }
+  ],
+  "customers": [
+    {
+      "id": "9212b03d-fb4d-4a3d-95a7-6a397493df61",
+      "name": "João Carlos Silva",
+      "cpf_cnpj": "123.456.789-00",
+      "phone": "(21) 98765-4321",
+      "email": "joao@email.com",
+      "address": "Rua das Flores, 100",
+      "veiculo": "Honda Civic 2020",
+      "placa": "ABC-1234"
+    },
+    {
+      "id": "b9464f2f-ccc2-4d57-883e-66506186fb25",
+      "name": "Maria Santos Oliveira",
+      "cpf_cnpj": "987.654.321-00",
+      "phone": "(21) 91234-5678",
+      "email": "maria@email.com",
+      "address": "Av. Brasil, 200",
+      "veiculo": "Toyota Corolla",
+      "placa": "DEF-5678"
+    }
+  ],
+  "sales": [
+    {
+      "customer_id": "9212b03d-fb4d-4a3d-95a7-6a397493df61",
+      "customer_name": "João Carlos Silva",
+      "items": [
+        {
+          "product_id": "94899596-26a6-4251-b242-754140b4f42e",
+          "name": "Filtro de Óleo",
+          "code": "FLT001",
+          "unit": "UN",
+          "quantity": 12.0,
+          "unit_price": 35.0,
+          "discount": 10.0
+        }
+      ],
+      "subtotal": 378.0,
+      "discount_pct": 0.0,
+      "discount_value": 0.0,
+      "total": 378.0,
+      "payment_method": "PIX",
+      "cash_received": null,
+      "observations": "",
+      "operator": "Administrador",
+      "status": "cancelada",
+      "id": "a1d06971-e453-49d0-a990-2672c878c5c9",
+      "date": "2026-04-21T14:47:11.766537",
+      "cancelled_at": "2026-04-21T14:48:08.366943"
+    },
+    {
+      "customer_id": "b9464f2f-ccc2-4d57-883e-66506186fb25",
+      "customer_name": "Maria Santos Oliveira",
+      "items": [
+        {
+          "product_id": "cfad90eb-b7ca-4a9d-bdaf-1e32c9e8e5e1",
+          "name": "Filtro de Ar",
+          "code": "FLT002",
+          "unit": "UN",
+          "quantity": 3.0,
+          "unit_price": 45.0,
+          "discount": 0.0
+        }
+      ],
+      "subtotal": 135.0,
+      "discount_pct": 0.0,
+      "discount_value": 0.0,
+      "total": 135.0,
+      "payment_method": "Dinheiro",
+      "cash_received": null,
+      "observations": "",
+      "operator": "Administrador",
+      "status": "cancelada",
+      "id": "8d1a3ac1-dc4a-40fe-b270-b6c5d4737cc3",
+      "date": "2026-04-21T16:02:30.817065",
+      "cancelled_at": "2026-04-21T16:44:09.605940"
+    },
+    {
+      "customer_id": null,
+      "customer_name": "Consumidor Final",
+      "items": [
+        {
+          "product_id": "94899596-26a6-4251-b242-754140b4f42e",
+          "name": "Filtro de Óleo",
+          "code": "FLT001",
+          "unit": "UN",
+          "quantity": 1.0,
+          "unit_price": 35.0,
+          "discount": 0.0
+        },
+        {
+          "product_id": "cfad90eb-b7ca-4a9d-bdaf-1e32c9e8e5e1",
+          "name": "Filtro de Ar",
+          "code": "FLT002",
+          "unit": "UN",
+          "quantity": 1.0,
+          "unit_price": 45.0,
+          "discount": 0.0
+        }
+      ],
+      "subtotal": 80.0,
+      "discount_pct": 0.0,
+      "discount_value": 0.0,
+      "total": 80.0,
+      "payment_method": "PIX",
+      "cash_received": null,
+      "observations": "",
+      "operator": "Administrador",
+      "status": "concluida",
+      "id": "1e157449-e74b-4a6c-afed-8f06f97919f7",
+      "date": "2026-04-21T16:12:38.550908"
+    },
+    {
+      "customer_id": null,
+      "customer_name": "Consumidor Final",
+      "customer_phone": null,
+      "items": [
+        {
+          "product_id": "cfad90eb-b7ca-4a9d-bdaf-1e32c9e8e5e1",
+          "name": "Filtro de Ar",
+          "code": "FLT002",
+          "unit": "UN",
+          "quantity": 1.0,
+          "unit_price": 45.0,
+          "discount": 0.0,
+          "cancelled": true,
+          "cancelled_at": "2026-04-21T16:20:53.711924"
+        },
+        {
+          "product_id": "ec298080-8086-4f8d-ab6d-5ca7d3fe19c9",
+          "name": "Amortecedor Dianteiro",
+          "code": "SUS001",
+          "unit": "UN",
+          "quantity": 1.0,
+          "unit_price": 220.0,
+          "discount": 0.0
+        }
+      ],
+      "subtotal": 220.0,
+      "discount_pct": 0.0,
+      "discount_value": 0.0,
+      "total": 220.0,
+      "payment_method": "PIX",
+      "cash_received": null,
+      "observations": "",
+      "operator": "Administrador",
+      "status": "concluida",
+      "id": "d2f63ce7-ab60-42c9-bf4c-6a3fb94604b1",
+      "date": "2026-04-21T16:19:47.329547",
+      "last_edited": "2026-04-21T16:21:01.188453"
+    },
+    {
+      "customer_id": null,
+      "customer_name": "Consumidor Final",
+      "customer_phone": null,
+      "items": [
+        {
+          "product_id": "80ffbbfe-31e6-420e-9fd0-9db25b82531a",
+          "name": "Bateria 60Ah",
+          "code": "BAT001",
+          "unit": "UN",
+          "quantity": 1.0,
+          "unit_price": 450.0,
+          "discount": 0.0,
+          "cancelled": true,
+          "cancelled_at": "2026-04-21T16:31:28.210012"
+        },
+        {
+          "product_id": "c3a6e233-225a-4316-948d-2c2275236d76",
+          "name": "Pastilha de Freio Dianteira",
+          "code": "FRE001",
+          "unit": "JG",
+          "quantity": 1.0,
+          "unit_price": 95.0,
+          "discount": 0.0
+        },
+        {
+          "product_id": "cfad90eb-b7ca-4a9d-bdaf-1e32c9e8e5e1",
+          "name": "Filtro de Ar",
+          "code": "FLT002",
+          "unit": "UN",
+          "quantity": 3.0,
+          "unit_price": 45.0,
+          "discount": 0.0
+        },
+        {
+          "product_id": "f1bd2055-1697-4397-b4b8-c3bf87e79870",
+          "name": "Correia Alternador",
+          "code": "ALT001",
+          "unit": "UN",
+          "quantity": 1.0,
+          "unit_price": 72.0,
+          "discount": 0.0
+        }
+      ],
+      "subtotal": 302.0,
+      "discount_pct": 0.0,
+      "discount_value": 0.0,
+      "total": 302.0,
+      "payment_method": "Dinheiro",
+      "cash_received": null,
+      "observations": "",
+      "operator": "Administrador",
+      "status": "concluida",
+      "id": "e9c0b62c-4a63-4dc4-bd83-b42a096626cc",
+      "date": "2026-04-21T16:28:12.254927",
+      "last_edited": "2026-04-21T16:31:36.397367"
+    }
+  ],
+  "users": [
+    {
+      "id": "admin-fixed",
+      "username": "admin",
+      "password": "admin",
+      "role": "admin",
+      "name": "Administrador",
+      "active": true
+    },
+    {
+      "id": "func-fixed",
+      "username": "funcionario",
+      "password": "123moto",
+      "role": "operator",
+      "name": "Funcionário",
+      "active": true
+    }
+  ],
+  "settings": {
+    "accent_color": "#f97316",
+    "nota_fiscal": {
+      "nome_loja": "BINC",
+      "slogan": "Sistema de Gestão e Vendas",
+      "endereco": "",
+      "telefone": "",
+      "cnpj": "",
+      "rodape": "Obrigado pela preferência!"
+    },
+    "meu_whatsapp": "",
+    "cosmos_tokens": [
+      "rVv9dko-ne0PU50PBbcBgQ",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cosmos_usage_count": 0
+  },
+  "empresa": {
+    "razao_social": "BINC LTDA",
+    "nome_fantasia": "Binc",
+    "cnpj": "00.000.000/0001-00",
+    "ie": "000.000.000.000",
+    "im": "",
+    "endereco": "Rua Principal, 100",
+    "bairro": "Centro",
+    "municipio": "São Paulo",
+    "uf": "SP",
+    "cep": "01000-000",
+    "telefone": "(11) 0000-0000",
+    "email": "",
+    "regime": "1",
+    "cnae": "4530-7/03"
+  },
+  "nfce": {
+    "serie": "001",
+    "proxima_nf": 1,
+    "ambiente": "2",
+    "csc_id": "000001",
+    "csc_token": "AAAA0000000000000000000000000000",
+    "cuf": "35",
+    "cmun": "3550308"
+  }
+}

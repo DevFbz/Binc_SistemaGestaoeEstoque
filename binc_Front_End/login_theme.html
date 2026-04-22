@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; font-family: 'Material Symbols Outlined'; }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #f0f2f4;
+        color: #181c1d;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    /* Subtle noise pattern */
+    body::before {
+        content: '';
+        position: fixed; inset: 0;
+        background:
+            radial-gradient(ellipse at 25% 20%, rgba(0,51,54,0.05) 0%, transparent 50%),
+            radial-gradient(ellipse at 75% 80%, rgba(61,106,0,0.04) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .login-card {
+        position: relative;
+        width: 400px;
+        background: #ffffff;
+        border: 1px solid rgba(0,0,0,0.06);
+        border-radius: 1.25rem 0.625rem 1.25rem 0.625rem;
+        box-shadow:
+            0 1px 3px rgba(0,0,0,0.04),
+            0 8px 32px rgba(0,0,0,0.06),
+            0 24px 60px rgba(0,0,0,0.04);
+        padding: 2.5rem 2.25rem 2rem;
+        animation: cardIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes cardIn {
+        from { opacity: 0; transform: scale(0.96) translateY(12px); }
+        to   { opacity: 1; transform: scale(1)    translateY(0);     }
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 1rem; right: 1rem;
+        width: 28px; height: 28px;
+        background: transparent;
+        border: 1px solid rgba(0,0,0,0.08);
+        border-radius: 8px;
+        color: rgba(0,0,0,0.3);
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .close-btn:hover { background: rgba(0,0,0,0.04); color: rgba(0,0,0,0.5); }
+
+    .logo-dot {
+        width: 44px; height: 44px;
+        background: linear-gradient(135deg, #003336 0%, #004b50 100%);
+        border-radius: 12px 6px 12px 6px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1rem;
+        box-shadow: 0 2px 8px rgba(0,51,54,0.18);
+    }
+    .logo-dot span {
+        color: #fff;
+        font-size: 22px;
+    }
+
+    .logo-name {
+        font-family: 'Manrope', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        text-align: center;
+        letter-spacing: 0.08em;
+        color: #003336;
+        display: block;
+    }
+    .logo-sub {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-align: center;
+        color: #8c9393;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        display: block;
+        margin-top: 0.3rem;
+        margin-bottom: 2rem;
+    }
+
+    .pin-banner {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 170, 0, 0.06);
+        border: 1px solid rgba(255, 170, 0, 0.2);
+        border-radius: 8px;
+        padding: 0.6rem 0.75rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #b37800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-label {
+        display: block;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #8c9393;
+        margin-bottom: 0.4rem;
+    }
+    .form-input {
+        width: 100%;
+        height: 44px;
+        background: #f7f9fa;
+        border: 1.5px solid #e0e3e3;
+        border-radius: 10px;
+        padding: 0 1rem;
+        font-size: 0.875rem;
+        font-family: 'Inter', sans-serif;
+        color: #181c1d;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .form-input::placeholder { color: #bac0c0; }
+    .form-input:focus {
+        border-color: #003336;
+        box-shadow: 0 0 0 3px rgba(0,51,54,0.06);
+        background: #fff;
+    }
+    .form-input.error-field {
+        border-color: rgba(186, 26, 26, 0.6);
+        box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.06);
+        animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+        0%,100% { transform: translateX(0); }
+        25%,75%  { transform: translateX(-4px); }
+        50%      { transform: translateX(4px); }
+    }
+
+    .error-msg {
+        min-height: 20px;
+        text-align: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #ba1a1a;
+        margin: 0.5rem 0;
+        transition: opacity 0.2s;
+    }
+
+    .btn-login {
+        width: 100%;
+        height: 48px;
+        background: linear-gradient(135deg, #003336 0%, #004b50 100%);
+        border: none;
+        border-radius: 12px;
+        color: #ffffff;
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.875rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+        margin-top: 0.5rem;
+        box-shadow: 0 2px 12px rgba(0,51,54,0.15);
+    }
+    .btn-login:hover {
+        background: linear-gradient(135deg, #004b50 0%, #3d6a00 100%);
+        box-shadow: 0 4px 20px rgba(0,51,54,0.22);
+        transform: translateY(-1px);
+    }
+    .btn-login:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 6px rgba(0,51,54,0.12);
+    }
+    .btn-login:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .version-info {
+        text-align: center;
+        font-size: 0.625rem;
+        color: #bac0c0;
+        margin-top: 1.5rem;
+        letter-spacing: 0.04em;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0.25rem 0 1.25rem;
+    }
+    .divider::before, .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e8ebeb;
+    }
+    .divider span {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #bac0c0;
+    }
+</style>
+</head>
+<body>
+
+<div class="login-card" id="login_card">
+
+    <!-- Close button -->
+    <button class="close-btn" onclick="pyQuit()" title="Fechar">✕</button>
+
+    <!-- Logo -->
+    <div class="logo-dot">
+        <span class="material-symbols-outlined" style="font-family:'Material Symbols Outlined'">storefront</span>
+    </div>
+    <span class="logo-name">BINC</span>
+    <span class="logo-sub">Sistema de Gestão e Vendas</span>
+
+    <!-- PIN banner (shown if needs activation) -->
+    <div class="pin-banner" id="pin_banner" style="display:none;">
+        <span class="material-symbols-outlined" style="font-size:14px;font-family:'Material Symbols Outlined'">lock</span>
+        Ativação do sistema necessária — insira o PIN
+    </div>
+
+    <!-- PIN field -->
+    <div class="form-group" id="pin_group" style="display:none;">
+        <label class="form-label">Pin de Ativação</label>
+        <input type="password" id="inp_pin" class="form-input" placeholder="• • • •" maxlength="4" onkeydown="handleKey(event)"/>
+    </div>
+
+    <div class="divider"><span>Acesso</span></div>
+
+    <!-- Username -->
+    <div class="form-group">
+        <label class="form-label">Usuário</label>
+        <input type="text" id="inp_user" class="form-input" placeholder="Login de acesso" autocomplete="username" onkeydown="handleKey(event)"/>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+        <label class="form-label">Senha</label>
+        <input type="password" id="inp_pass" class="form-input" placeholder="••••••••" autocomplete="current-password" onkeydown="handleKey(event)"/>
+    </div>
+
+    <!-- Error -->
+    <div class="error-msg" id="error_msg"></div>
+
+    <!-- Login button -->
+    <button class="btn-login" id="btn_login" onclick="doLogin()">
+        <span class="material-symbols-outlined" style="font-family:'Material Symbols Outlined'; font-size:18px;">login</span>
+        ENTRAR
+    </button>
+
+    <!-- Version -->
+    <p class="version-info">v3.0 · Binc ERP</p>
+</div>
+
+<script>
+    var _needsPin = false;
+
+    function initLogin(needsPin) {
+        _needsPin = needsPin;
+        if (needsPin) {
+            document.getElementById('pin_banner').style.display = 'flex';
+            document.getElementById('pin_group').style.display  = 'block';
+            document.getElementById('inp_pin').focus();
+        } else {
+            document.getElementById('inp_user').focus();
+        }
+    }
+
+    function showError(msg) {
+        var el = document.getElementById('error_msg');
+        el.innerText = msg;
+        // shake fields
+        ['inp_user','inp_pass'].forEach(function(id){
+            var f = document.getElementById(id);
+            f.classList.add('error-field');
+            setTimeout(function(){ f.classList.remove('error-field'); }, 1000);
+        });
+        var btn = document.getElementById('btn_login');
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-family:\'Material Symbols Outlined\';font-size:18px;">login</span> ENTRAR';
+    }
+
+    function handleKey(e) {
+        if (e.key === 'Enter') doLogin();
+    }
+
+    function doLogin() {
+        var btn  = document.getElementById('btn_login');
+        var pin  = _needsPin ? document.getElementById('inp_pin').value.trim() : '';
+        var user = document.getElementById('inp_user').value.trim();
+        var pass = document.getElementById('inp_pass').value;
+
+        if (!user || !pass) { showError('Preencha o login e a senha.'); return; }
+        if (_needsPin && !pin) { showError('Informe o PIN de ativação.'); return; }
+
+        // Loading state
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-family:\'Material Symbols Outlined\';font-size:18px;animation:spin 1s linear infinite">progress_activity</span> Verificando...';
+        document.getElementById('error_msg').innerText = '';
+
+        var params = new URLSearchParams({ u: user, p: pass, pin: pin });
+        window.location.href = "py://action/login?" + params.toString();
+    }
+
+    function pyQuit() { window.location.href = "py://action/quit"; }
+</script>
+</body></html>

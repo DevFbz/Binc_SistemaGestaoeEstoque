@@ -1,0 +1,51 @@
+{
+  "products": [
+    {
+      "code": "",
+      "barcode": "",
+      "name": "gegegrer",
+      "category": "",
+      "brand": "",
+      "cost_price": 1.0,
+      "sale_price": 7.0,
+      "stock": 0,
+      "min_stock": 12,
+      "description": "",
+      "ncm": "",
+      "cfop": "5102",
+      "id": "79a14ca9-a54",
+      "added_at": "2026-04-20T20:08:59.173075"
+    },
+    {
+      "code": "",
+      "barcode": "",
+      "name": "fw4",
+      "category": "34343",
+      "brand": "",
+      "cost_price": 0.0,
+      "sale_price": 3.0,
+      "stock": 0,
+      "min_stock": 2,
+      "description": "",
+      "ncm": "",
+      "cfop": "5102",
+      "id": "04e6daf7-9f8",
+      "added_at": "2026-04-20T20:09:14.500838"
+    }
+  ],
+  "sales": [],
+  "customers": [],
+  "users": [
+    {
+      "id": "admin-fixed",
+      "name": "Administrador",
+      "username": "admin",
+      "password": "admin",
+      "role": "admin",
+      "active": true
+    }
+  ],
+  "settings": {},
+  "trocas": [],
+  "faltas": []
+}

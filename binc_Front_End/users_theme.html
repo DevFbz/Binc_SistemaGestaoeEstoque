@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode: "class",
+    theme: { extend: { colors: {
+        "surface-container-highest": "#e0e3e3", "secondary": "#3d6a00",
+        "primary": "#003336", "surface-container": "#ebeeee", "on-error-container": "#93000a",
+        "surface": "#f7fafa", "on-primary": "#ffffff", "surface-container-lowest": "#ffffff",
+        "surface-variant": "#e0e3e3", "primary-container": "#004b50", "error-container": "#ffdad6",
+        "background": "#f7fafa", "on-surface-variant": "#404849", "on-surface": "#181c1d",
+        "surface-container-low": "#f1f4f4", "surface-container-high": "#e6e9e9", "error": "#ba1a1a"
+    }, fontFamily: { "headline": ["Manrope"], "body": ["Inter"] } } }
+}
+</script>
+<style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .bento-leaf { border-radius: 0.75rem 0.375rem 0.75rem 0.375rem; }
+    body::-webkit-scrollbar { width: 8px; } body::-webkit-scrollbar-thumb { background: #b1edf2; border-radius: 4px; }
+    .modal-scroll::-webkit-scrollbar { width: 6px; } .modal-scroll::-webkit-scrollbar-thumb { background: #b1edf2; border-radius: 3px; }
+    input:focus, select:focus { border-color: #003336 !important; box-shadow: 0 0 0 2px rgba(0,51,54,0.08); }
+    .modal-overlay { animation: fadeIn 0.15s ease; }
+    .modal-card    { animation: slideUp 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+    @keyframes slideUp { from { opacity:0; transform: translateY(12px) } to { opacity:1; transform: translateY(0) } }
+    .fade-in { animation: fadeIn 0.25s ease; }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased">
+<main class="px-8 py-8 min-h-screen">
+
+<!-- Header -->
+<header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+        <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Administração</span>
+        <h1 class="text-4xl font-extrabold font-headline text-primary tracking-tight">Usuários do Sistema</h1>
+    </div>
+    <button onclick="pyAdd()" class="px-6 py-2.5 rounded-lg font-bold text-sm bg-gradient-to-br from-primary to-primary-container text-on-primary hover:from-secondary hover:to-secondary-container transition-all shadow-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">person_add</span> Novo Usuário
+    </button>
+</header>
+
+<!-- Info banner -->
+<div class="mb-6 p-4 bg-surface-container-low bento-leaf border border-surface-variant flex items-start gap-3">
+    <span class="material-symbols-outlined text-primary text-xl mt-0.5 shrink-0">info</span>
+    <p class="text-sm text-on-surface-variant">
+        <span class="font-bold text-primary">Operador</span> — acesso a Produtos, Nova Venda, Histórico e Clientes. &ensp;
+        <span class="font-bold text-primary">Administrador</span> — acesso completo a todos os módulos.
+    </p>
+</div>
+
+<!-- Table -->
+<div class="bg-surface-container-lowest bento-leaf border border-slate-200/50 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left table-auto min-w-[640px]">
+            <thead class="bg-surface-container-low">
+                <tr>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider">Nome / ID</th>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider w-36">Login</th>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider w-32">Perfil</th>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider w-24">Status</th>
+                    <th class="px-6 py-3 text-xs font-bold uppercase text-on-surface-variant tracking-wider text-right w-36">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="table_body" class="divide-y divide-surface">
+                <!-- Injetado via Python -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Counter -->
+<p class="mt-4 text-xs text-on-surface-variant text-right" id="val_count">0 usuários cadastrados</p>
+</main>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL: Usuário (Add / Edit)                                           -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div id="modal_user" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 modal-overlay">
+    <div class="bg-background bento-leaf w-full max-w-[520px] shadow-2xl flex flex-col max-h-[92vh] modal-card">
+
+        <!-- Header -->
+        <div class="px-6 pt-6 pb-4 border-b border-surface-variant flex items-center justify-between shrink-0">
+            <div>
+                <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Administração</span>
+                <h2 id="modal_user_title" class="text-2xl font-extrabold font-headline text-primary">Novo Usuário</h2>
+            </div>
+            <button onclick="closeUserModal()" class="w-9 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors">
+                <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="overflow-y-auto flex-1 px-6 py-5 modal-scroll space-y-4">
+
+            <!-- Nome -->
+            <div>
+                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Nome Completo *</label>
+                <input type="text" id="u_name" placeholder="Nome completo do usuário..." class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest"/>
+            </div>
+
+            <!-- Login -->
+            <div>
+                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Login / Usuário *</label>
+                <input type="text" id="u_username" placeholder="Login de acesso (sem espaços)..." class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest font-mono"/>
+            </div>
+
+            <!-- Senha + Confirmar -->
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Senha *</label>
+                    <input type="password" id="u_pass" placeholder="Senha..." class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest"/>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Confirmar Senha</label>
+                    <input type="password" id="u_pass2" placeholder="Confirme..." class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm bg-surface-container-lowest"/>
+                </div>
+            </div>
+            <p id="u_pass_hint" class="text-xs text-on-surface-variant -mt-2" style="display:none">Deixe em branco para manter a senha atual.</p>
+
+            <!-- Perfil -->
+            <div>
+                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-2">Perfil de Acesso</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all" id="role_op_card" onclick="selectRole('operator')">
+                        <input type="radio" name="u_role" value="operator" id="role_op" class="accent-primary" checked/>
+                        <div>
+                            <span class="block font-bold text-sm text-primary">Operador</span>
+                            <span class="block text-xs text-on-surface-variant">Acesso limitado</span>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all" id="role_adm_card" onclick="selectRole('admin')">
+                        <input type="radio" name="u_role" value="admin" id="role_adm" class="accent-primary"/>
+                        <div>
+                            <span class="block font-bold text-sm text-primary">Administrador</span>
+                            <span class="block text-xs text-on-surface-variant">Acesso total</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Permissão editar produtos -->
+            <label class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg border border-surface-variant cursor-pointer hover:bg-surface-container transition-colors">
+                <input type="checkbox" id="u_can_edit" class="w-4 h-4 accent-primary rounded"/>
+                <div>
+                    <span class="block text-sm font-bold text-on-surface">Permitir editar / excluir produtos</span>
+                    <span class="block text-xs text-on-surface-variant">Quando desmarcado, o Operador só pode visualizar o estoque.</span>
+                </div>
+            </label>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-surface-variant flex justify-end gap-3 shrink-0 bg-surface-container-lowest/60">
+            <button onclick="closeUserModal()" class="px-5 py-2.5 rounded-lg font-bold text-sm bg-surface-container text-primary hover:bg-surface-container-high transition-colors">Cancelar</button>
+            <button onclick="saveUser()" class="px-6 py-2.5 rounded-lg font-bold text-sm bg-gradient-to-br from-primary to-primary-container text-on-primary hover:from-secondary hover:to-secondary-container transition-all shadow-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">save</span> Salvar Usuário
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL: Confirmar Exclusão                                             -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div id="modal_confirm" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 modal-overlay">
+    <div class="bg-background bento-leaf w-full max-w-[400px] shadow-2xl p-6 modal-card">
+        <div class="flex items-start gap-4 mb-6">
+            <div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-error text-2xl">person_remove</span>
+            </div>
+            <div>
+                <h3 class="font-headline font-bold text-lg text-primary mb-1">Confirmar Exclusão</h3>
+                <p id="confirm_msg" class="text-sm text-on-surface-variant">Deseja excluir este usuário?</p>
+            </div>
+        </div>
+        <div class="flex gap-3 justify-end">
+            <button onclick="closeConfirm()" class="px-5 py-2.5 rounded-lg font-bold text-sm bg-surface-container text-primary hover:bg-surface-container-high transition-colors">Cancelar</button>
+            <button id="confirm_ok_btn" class="px-5 py-2.5 rounded-lg font-bold text-sm bg-error text-white hover:opacity-90 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">delete</span> Excluir
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _current_user_id = '';
+    var _is_editing = false;
+
+    function pyAdd()       { window.location.href = "py://action/add"; }
+    function pyEdit(id)    { window.location.href = "py://action/edit?id=" + encodeURIComponent(id); }
+    function pyToggle(id)  { window.location.href = "py://action/toggle?id=" + encodeURIComponent(id); }
+    function pyDel(id, name) { openConfirm(id, name); }
+
+    function setTableData(htmlStr, qtStr) {
+        document.getElementById('table_body').innerHTML = htmlStr;
+        document.getElementById('val_count').innerText  = qtStr;
+    }
+
+    // ── User Modal ─────────────────────────────────────────────────────────
+    function openUserModal(data) {
+        data = data || {};
+        _current_user_id = data.id || '';
+        _is_editing = !!_current_user_id;
+        document.getElementById('modal_user_title').innerText = _is_editing ? 'Editar Usuário' : 'Novo Usuário';
+
+        document.getElementById('u_name').value     = data.name     || '';
+        document.getElementById('u_username').value = data.username || '';
+        document.getElementById('u_pass').value     = '';
+        document.getElementById('u_pass2').value    = '';
+        document.getElementById('u_can_edit').checked = data.can_edit_products || false;
+        document.getElementById('u_pass_hint').style.display = _is_editing ? 'block' : 'none';
+        document.getElementById('u_username').disabled = _is_editing;
+
+        var role = data.role || 'operator';
+        document.getElementById('role_op').checked  = role === 'operator';
+        document.getElementById('role_adm').checked = role === 'admin';
+        updateRoleCards(role);
+
+        showModal('modal_user');
+        setTimeout(function() { document.getElementById('u_name').focus(); }, 150);
+    }
+
+    function closeUserModal() { hideModal('modal_user'); _current_user_id = ''; document.getElementById('u_username').disabled = false; }
+
+    function selectRole(r) {
+        document.getElementById('role_op').checked  = r === 'operator';
+        document.getElementById('role_adm').checked = r === 'admin';
+        updateRoleCards(r);
+    }
+
+    function updateRoleCards(r) {
+        var op  = document.getElementById('role_op_card');
+        var adm = document.getElementById('role_adm_card');
+        op.className  = 'flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ' + (r === 'operator' ? 'border-primary bg-primary/5' : 'border-surface-variant bg-surface-container-lowest hover:bg-surface-container-low');
+        adm.className = 'flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ' + (r === 'admin'    ? 'border-primary bg-primary/5' : 'border-surface-variant bg-surface-container-lowest hover:bg-surface-container-low');
+    }
+
+    function saveUser() {
+        var name  = document.getElementById('u_name').value.trim();
+        var user  = document.getElementById('u_username').value.trim().toLowerCase().replace(/\s/g, '');
+        var pass  = document.getElementById('u_pass').value;
+        var pass2 = document.getElementById('u_pass2').value;
+
+        if (!name) { shakeField('u_name'); return; }
+        if (!user) { shakeField('u_username'); return; }
+        if (!_is_editing && !pass) { shakeField('u_pass'); return; }
+        if (pass && pass !== pass2) {
+            shakeField('u_pass'); shakeField('u_pass2');
+            alert('As senhas não coincidem!'); return;
+        }
+
+        var role = document.getElementById('role_adm').checked ? 'admin' : 'operator';
+        var params = new URLSearchParams({
+            id:               _current_user_id,
+            name:             name,
+            username:         user,
+            password:         pass,
+            role:             role,
+            can_edit_products: document.getElementById('u_can_edit').checked ? '1' : '0',
+        });
+        closeUserModal();
+        window.location.href = "py://action/modal_save?" + params.toString();
+    }
+
+    // ── Confirm Modal ──────────────────────────────────────────────────────
+    function openConfirm(uid, name) {
+        document.getElementById('confirm_msg').innerText = "Excluir o usuário \"" + name + "\"? Esta ação não pode ser desfeita.";
+        document.getElementById('confirm_ok_btn').onclick = function() {
+            closeConfirm();
+            window.location.href = "py://action/del_confirm?id=" + encodeURIComponent(uid);
+        };
+        showModal('modal_confirm');
+    }
+    function closeConfirm() { hideModal('modal_confirm'); }
+
+    // ── Utils ──────────────────────────────────────────────────────────────
+    function showModal(id) { var el=document.getElementById(id); el.classList.remove('hidden'); el.classList.add('flex'); }
+    function hideModal(id) { var el=document.getElementById(id); el.classList.add('hidden'); el.classList.remove('flex'); }
+    function shakeField(id) {
+        var el=document.getElementById(id); el.style.borderColor='#ba1a1a'; el.focus();
+        setTimeout(function(){ el.style.borderColor=''; },2000);
+    }
+
+    document.addEventListener('keydown', function(e) { if(e.key==='Escape'){closeUserModal();closeConfirm();} });
+    ['modal_user','modal_confirm'].forEach(function(id){
+        document.getElementById(id).addEventListener('click',function(e){
+            if(e.target===this){id==='modal_user'?closeUserModal():closeConfirm();}
+        });
+    });
+</script>
+</body></html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode: "class",
+    theme: { extend: { colors: {
+        "surface-container-highest": "#e0e3e3", "secondary": "#3d6a00",
+        "primary": "#003336", "surface-container": "#ebeeee", "on-error-container": "#93000a",
+        "surface": "#f7fafa", "on-primary": "#ffffff", "surface-container-lowest": "#ffffff",
+        "surface-variant": "#e0e3e3", "primary-container": "#004b50", "error-container": "#ffdad6",
+        "background": "#f7fafa", "on-surface-variant": "#404849", "on-surface": "#181c1d",
+        "surface-container-high": "#e6e9e9", "error": "#ba1a1a"
+    }, fontFamily: { "headline": ["Manrope"], "body": ["Inter"] } } }
+}
+</script>
+<style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .bento-leaf { border-radius: 0.75rem 0.375rem 0.75rem 0.375rem; }
+    body::-webkit-scrollbar { width: 8px; } body::-webkit-scrollbar-thumb { background: #b1edf2; border-radius: 4px; }
+    .modal-scroll::-webkit-scrollbar { width: 6px; } .modal-scroll::-webkit-scrollbar-thumb { background: #b1edf2; border-radius: 3px; }
+    .modal-overlay { animation: fadeIn 0.15s ease; }
+    .modal-card { animation: slideUp 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+    @keyframes slideUp { from { opacity:0; transform: translateY(12px) } to { opacity:1; transform: translateY(0) } }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased">
+<main class="px-8 py-8 min-h-screen flex flex-col h-screen">
+<!-- Header -->
+<header class="mb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+        <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Fiscal</span>
+        <h1 class="text-4xl font-extrabold font-headline text-primary tracking-tight">Historico de Vendas</h1>
+    </div>
+</header>
+<!-- Tools -->
+<div class="bg-surface-container-lowest p-6 bento-leaf border border-slate-200/50 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center mb-6 shrink-0">
+    <div class="flex gap-4 items-center flex-wrap flex-1">
+        <div class="relative w-full md:w-64">
+            <input type="text" id="inp_search" placeholder="Buscar Cliente ou ID..." onkeyup="doSearch(event)" class="w-full pl-10 h-10 border border-surface-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-lg">search</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-bold">Início:</span>
+            <input type="date" id="date_start" onchange="doSearch()" class="h-10 border border-surface-variant rounded-lg px-3 focus:border-primary">
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-bold">Fim:</span>
+            <input type="date" id="date_end" onchange="doSearch()" class="h-10 border border-surface-variant rounded-lg px-3 focus:border-primary">
+        </div>
+        <button onclick="pyClear()" class="px-3 py-2 bg-surface-container hover:bg-surface-variant text-primary rounded font-bold text-xs">Limpar</button>
+    </div>
+    <div class="flex gap-2 text-sm text-on-surface-variant">
+        <span id="val_count" class="font-bold flex items-center gap-2"><span class="material-symbols-outlined text-primary">monitoring</span> 0 Registro(s)</span>
+    </div>
+</div>
+<!-- Layout 2 colunas -->
+<div class="flex gap-6 flex-1 min-h-0">
+    <!-- Lista -->
+    <div class="w-1/2 bg-surface-container-lowest bento-leaf border border-slate-200/50 shadow-sm overflow-hidden flex flex-col h-full">
+        <div class="overflow-y-auto flex-1 p-2" id="list_body">
+            <!-- Injected via Python -->
+        </div>
+    </div>
+    <!-- Detalhes -->
+    <div class="w-1/2 bg-surface-container-low bento-leaf border border-slate-200/50 shadow-sm overflow-hidden flex flex-col h-full p-6">
+        <h2 class="text-xl font-bold font-headline text-primary mb-4 border-b border-slate-200 pb-2">Detalhes da Venda</h2>
+        <div id="detail_body" class="flex-1 overflow-y-auto space-y-4">
+            <div class="flex justify-center items-center h-full text-on-surface-variant">
+                <p class="text-center">
+                    <span class="material-symbols-outlined text-4xl mb-2 block">receipt_long</span>
+                    Selecione uma venda à esquerda para ver os detalhes
+                </p>
+            </div>
+        </div>
+        <div id="action_body" class="mt-4 pt-4 border-t border-slate-200 flex justify-end gap-3 hidden">
+            <!-- Botoes de acao (pdf nfce, cancelar) -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal Devolução -->
+<div id="modal_return" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 modal-overlay">
+    <div class="bg-background bento-leaf w-full max-w-[680px] shadow-2xl flex flex-col max-h-[90vh] modal-card">
+        <!-- Header -->
+        <div class="px-6 pt-6 pb-4 border-b border-surface-variant flex items-center justify-between shrink-0">
+            <div>
+                <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Pós-Venda</span>
+                <h2 class="text-2xl font-extrabold font-headline text-primary">Registrar Devolução</h2>
+            </div>
+            <button onclick="closeReturnModal()" class="w-9 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors">
+                <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+        </div>
+        
+        <!-- Info da Venda -->
+        <div class="px-6 py-3 bg-surface-container-low border-b border-surface-variant flex items-center justify-between text-xs font-bold text-on-surface-variant">
+            <span id="ret_sale_info">Venda: #000 | Cliente: ---</span>
+            <span id="ret_sale_date">Data: ---</span>
+        </div>
+
+        <!-- Lista de Itens -->
+        <div class="flex-1 overflow-y-auto p-4 modal-scroll">
+            <table class="w-full text-left text-sm border-separate border-spacing-y-2">
+                <thead>
+                    <tr class="text-[10px] uppercase text-on-surface-variant">
+                        <th class="px-3 py-2 w-10"></th>
+                        <th class="px-3 py-2">Produto</th>
+                        <th class="px-3 py-2 text-center">Qtd</th>
+                        <th class="px-3 py-2 text-center w-24">Devolver</th>
+                        <th class="px-3 py-2 text-right">Preço</th>
+                    </tr>
+                </thead>
+                <tbody id="ret_table_body">
+                    <!-- Injected -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Motivo -->
+        <div class="px-6 py-4 bg-surface-container-low border-t border-surface-variant">
+            <div class="flex flex-col gap-3">
+                <div>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Motivo da Devolução</label>
+                    <select id="ret_motivo" class="w-full h-10 border border-surface-variant rounded-lg px-3 text-sm focus:ring-1 focus:ring-primary">
+                        <option value="Avaria">Avaria (Produto Danificado)</option>
+                        <option value="Defeito">Defeito de Fabricação</option>
+                        <option value="Arrependimento">Arrependimento (Volta ao Estoque)</option>
+                        <option value="Outro">Outro Motivo</option>
+                    </select>
+                </div>
+                <div class="p-3 bg-surface-container rounded-lg border border-surface-variant text-[11px] text-on-surface-variant leading-relaxed">
+                    <span class="font-bold flex items-center gap-1 mb-1"><span class="material-symbols-outlined text-sm">info</span> Regra de Estoque:</span>
+                    Avaria/Defeito: O produto vai para a aba "Trocas".<br/>Arrependimento: O produto retorna automaticamente para o estoque disponível.
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-surface-variant flex justify-end gap-3 shrink-0">
+            <button onclick="closeReturnModal()" class="px-5 py-2.5 rounded-lg font-bold text-sm bg-surface-container text-primary hover:bg-surface-container-high transition-colors">
+                Cancelar
+            </button>
+            <button onclick="confirmReturn()" class="px-6 py-2.5 rounded-lg font-bold text-sm bg-gradient-to-br from-error to-red-700 text-white hover:opacity-90 transition-all shadow-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">assignment_return</span> Confirmar Devolução
+            </button>
+        </div>
+    </div>
+</div>
+
+</main>
+<script>
+    function doSearch(e) { pySearch(); }
+    function pySearch() {
+        var q = document.getElementById('inp_search').value;
+        var ds = document.getElementById('date_start').value;
+        var de = document.getElementById('date_end').value;
+        window.location.href = "py://action/search?q=" + encodeURIComponent(q) + "&start=" + ds + "&end=" + de;
+    }
+    function pyClear() {
+        document.getElementById('inp_search').value = "";
+        document.getElementById('date_start').value = "";
+        document.getElementById('date_end').value = "";
+        pySearch();
+    }
+    function pySelect(id) {
+        window.location.href = "py://action/select?id=" + encodeURIComponent(id);
+    }
+    function pyDel(id) { window.location.href = "py://action/del?id=" + encodeURIComponent(id); }
+    function pyPrint(id) { window.location.href = "py://action/print?id=" + encodeURIComponent(id); }
+    function pyRevert(strData) { window.location.href = "py://action/revert?data=" + encodeURIComponent(strData); }
+    
+    function setListData(htmlStr, qtStr) {
+        document.getElementById('list_body').innerHTML = htmlStr;
+        document.getElementById('val_count').innerHTML = '<span class="material-symbols-outlined text-primary">monitoring</span> ' + qtStr;
+        // clear dest
+        document.getElementById('detail_body').innerHTML = '<div class="flex justify-center items-center h-full text-on-surface-variant"><p class="text-center"><span class="material-symbols-outlined text-4xl mb-2 block">receipt_long</span>Selecione uma venda à esquerda para ver os detalhes</p></div>';
+        document.getElementById('action_body').classList.add("hidden");
+    }
+
+    function setDetailData(htmlDetails, htmlActions) {
+        document.getElementById('detail_body').innerHTML = htmlDetails;
+        if(htmlActions) {
+            document.getElementById('action_body').innerHTML = htmlActions;
+            document.getElementById('action_body').classList.remove("hidden");
+        } else {
+            document.getElementById('action_body').classList.add("hidden");
+        }
+    }
+
+    // --- Modal Return Logic ---
+    var _sale_to_return = null;
+
+    function openReturnModal(saleData) {
+        _sale_to_return = saleData;
+        console.log("Opening return modal for sale:", saleData.id);
+        
+        document.getElementById('ret_sale_info').innerText = "Venda: #" + saleData.id.substring(0,8) + " | Cliente: " + saleData.customer_name;
+        document.getElementById('ret_sale_date').innerText = "Data: " + saleData.date;
+        
+        var html = "";
+        saleData.items.forEach((item, index) => {
+            var already = item.returned_qty || 0;
+            var avail = item.quantity - already;
+            var disabled = avail <= 0 ? 'disabled opacity-30' : '';
+            
+            html += `
+            <tr class="bg-surface-container-lowest border border-surface-variant rounded-lg transition-colors hover:border-primary/30">
+                <td class="px-3 py-3 text-center">
+                    <input type="checkbox" class="ret_item_chk accent-primary w-4 h-4" ${disabled} onchange="toggleRetInput(${index}, this.checked)">
+                </td>
+                <td class="px-3 py-3">
+                    <span class="font-bold text-primary block">${item.name}</span>
+                    <span class="text-[10px] text-on-surface-variant uppercase">Ja devolvido: ${already} / Comprado: ${item.quantity}</span>
+                </td>
+                <td class="px-3 py-3 text-center font-bold text-primary">${avail}</td>
+                <td class="px-3 py-3">
+                    <input type="number" id="ret_qty_${index}" value="0" min="1" max="${avail}" disabled
+                           class="w-full h-8 border border-surface-variant rounded text-center text-sm focus:border-primary outline-none disabled:opacity-30">
+                </td>
+                <td class="px-3 py-3 text-right font-bold text-primary">R$ ${item.unit_price.toFixed(2)}</td>
+            </tr>`;
+        });
+        
+        document.getElementById('ret_table_body').innerHTML = html;
+        document.getElementById('modal_return').classList.remove('hidden');
+        document.getElementById('modal_return').classList.add('flex');
+    }
+
+    function toggleRetInput(idx, checked) {
+        var inp = document.getElementById('ret_qty_' + idx);
+        inp.disabled = !checked;
+        if(checked) {
+            inp.value = inp.max;
+            inp.focus();
+        } else {
+            inp.value = 0;
+        }
+    }
+
+    function closeReturnModal() {
+        document.getElementById('modal_return').classList.add('hidden');
+        document.getElementById('modal_return').classList.remove('flex');
+        _sale_to_return = null;
+    }
+
+    function confirmReturn() {
+        if(!_sale_to_return) return;
+        
+        var returns = [];
+        var chks = document.querySelectorAll('.ret_item_chk');
+        
+        chks.forEach((chk, idx) => {
+            if(chk.checked) {
+                var qty = parseInt(document.getElementById('ret_qty_' + idx).value) || 0;
+                if(qty > 0) {
+                    returns.push({
+                        product_id: _sale_to_return.items[idx].product_id,
+                        qty: qty,
+                        motivo: document.getElementById('ret_motivo').value
+                    });
+                }
+            }
+        });
+        
+        if(returns.length === 0) {
+            alert("Selecione pelo menos um item e a quantidade para devolver.");
+            return;
+        }
+        
+        var params = new URLSearchParams({
+            sale_id: _sale_to_return.id,
+            returns: JSON.stringify(returns)
+        });
+        
+        window.location.href = "py://action/process_return_modal?" + params.toString();
+        closeReturnModal();
+    }
+</script>
+</body></html>

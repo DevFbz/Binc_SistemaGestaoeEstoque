@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode: "class",
+    theme: { extend: { colors: {
+        "surface-container-highest": "#e0e3e3", "secondary": "#3d6a00",
+        "primary": "#003336", "surface-container": "#ebeeee", "on-error-container": "#93000a",
+        "surface": "#f7fafa", "on-primary": "#ffffff", "surface-container-lowest": "#ffffff",
+        "surface-variant": "#e0e3e3", "primary-container": "#004b50", "error-container": "#ffdad6",
+        "background": "#f7fafa", "on-surface-variant": "#404849", "on-surface": "#181c1d",
+        "surface-container-high": "#e6e9e9", "error": "#ba1a1a"
+    }, fontFamily: { "headline": ["Manrope"], "body": ["Inter"] } } }
+}
+</script>
+<style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .bento-leaf { border-radius: 0.75rem 0.375rem 0.75rem 0.375rem; }
+    body::-webkit-scrollbar { width: 8px; } body::-webkit-scrollbar-thumb { background: #b1edf2; border-radius: 4px; }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased flex flex-col h-screen">
+<main class="px-8 py-8 flex flex-col h-full overflow-hidden">
+<!-- Header -->
+<header class="mb-4 flex flex-col md:flex-row md:items-end justify-between gap-4 shrink-0">
+    <div>
+        <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Estatísticas</span>
+        <h1 class="text-4xl font-extrabold font-headline text-primary tracking-tight">Relatórios & Dashboards</h1>
+    </div>
+</header>
+<!-- Tools -->
+<div class="bg-surface-container-lowest p-6 bento-leaf border border-slate-200/50 shadow-sm flex flex-col md:flex-row justify-between items-center mb-6 shrink-0 gap-4">
+    <div class="flex items-center gap-4 flex-wrap">
+        <select id="sel_relatorio" onchange="pyGen()" class="h-10 border border-surface-variant rounded-lg px-3 focus:border-primary bg-surface-container font-bold text-primary min-w-[200px]">
+            <option value="Vendas por Periodo">Vendas por Periodo</option>
+            <option value="Vendas por Cliente">Vendas por Cliente</option>
+            <option value="Vendas por Produto">Vendas por Produto</option>
+            <option value="Estoque Atual">Estoque Atual</option>
+            <option value="Produtos Criticos (Estoque Baixo)">Produtos Criticos (Estoque Baixo)</option>
+            <option value="Resumo Financeiro">Resumo Financeiro</option>
+            <option value="Ranking Mais Vendidos">Ranking Mais Vendidos</option>
+        </select>
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase text-on-surface-variant">De:</span>
+            <input type="date" id="date_start" onchange="pyGen()" class="h-10 border border-surface-variant rounded-lg px-3 focus:border-primary text-sm">
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase text-on-surface-variant">Até:</span>
+            <input type="date" id="date_end" onchange="pyGen()" class="h-10 border border-surface-variant rounded-lg px-3 focus:border-primary text-sm">
+        </div>
+    </div>
+    <div class="flex gap-2">
+        <button onclick="pyExp()" class="px-5 py-2.5 bg-[#00C853] hover:bg-[#00E676] text-white rounded-lg font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-sm transition-colors">
+            <span class="material-symbols-outlined text-[18px]">table_view</span> Excel
+        </button>
+    </div>
+</div>
+
+<!-- Metricas -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 shrink-0">
+    <div class="bg-surface-container-lowest p-5 bento-leaf border border-slate-200/50 shadow-sm shadow-black/5 flex flex-col justify-center">
+        <p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1 tracking-widest">Registros</p>
+        <p class="text-2xl font-black text-[#FF6B35]" id="met_reg">0</p>
+    </div>
+    <div class="bg-surface-container-lowest p-5 bento-leaf border border-slate-200/50 shadow-sm shadow-black/5 flex flex-col justify-center">
+        <p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1 tracking-widest">Valor Total</p>
+        <p class="text-2xl font-black text-[#00C853]" id="met_val">R$ 0,00</p>
+    </div>
+    <div class="bg-surface-container-lowest p-5 bento-leaf border border-slate-200/50 shadow-sm shadow-black/5 flex flex-col justify-center">
+        <p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1 tracking-widest">Média</p>
+        <p class="text-2xl font-black text-[#FFD600]" id="met_med">R$ 0,00</p>
+    </div>
+    <div class="bg-surface-container-lowest p-5 bento-leaf border border-slate-200/50 shadow-sm shadow-black/5 flex flex-col justify-center">
+        <p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1 tracking-widest" id="lbl_per">Período</p>
+        <p class="text-2xl font-black text-[#1E88E5]" id="met_per">30 dias</p>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="bg-surface-container-lowest bento-leaf border border-slate-200/50 shadow-sm flex-1 overflow-hidden flex flex-col min-h-0">
+    <div class="overflow-auto flex-1 p-1">
+        <table class="w-full text-left text-sm relative">
+            <thead class="bg-surface-container-low text-[10px] uppercase text-on-surface-variant sticky top-0 z-10 shadow-sm" id="table_head">
+                <!-- Injected Header -->
+                <tr><th class="px-4 py-3">Carregando...</th></tr>
+            </thead>
+            <tbody id="table_body" class="divide-y divide-surface">
+                <!-- Injected Content -->
+            </tbody>
+        </table>
+    </div>
+    <div class="bg-surface-container p-3 text-center text-xs text-on-surface-variant border-t border-surface-variant shrink-0" id="table_foot">
+        Selecione um relatorio e clique em Gerar
+    </div>
+</div>
+</main>
+<script>
+    // Inicializar datas hoje - 30 dias
+    var dp=new Date(); dp.setDate(dp.getDate() - 30);
+    document.getElementById('date_start').valueAsDate = dp;
+    document.getElementById('date_end').valueAsDate = new Date();
+
+    function getD(id) { return document.getElementById(id).value; }
+    
+    function pyGen() {
+        var rt = document.getElementById('sel_relatorio').value;
+        window.location.href = "py://action/gen?rt=" + encodeURIComponent(rt) + "&ds=" + getD('date_start') + "&de=" + getD('date_end');
+    }
+    
+    function pyExp() {
+        var rt = document.getElementById('sel_relatorio').value;
+        window.location.href = "py://action/exp?rt=" + encodeURIComponent(rt) + "&ds=" + getD('date_start') + "&de=" + getD('date_end');
+    }
+    
+    function setTableData(htmlHead, htmlBody, footText, metrics) {
+        document.getElementById('table_head').innerHTML = htmlHead;
+        document.getElementById('table_body').innerHTML = htmlBody;
+        document.getElementById('table_foot').innerHTML = footText;
+        if(metrics) {
+            document.getElementById('met_reg').innerText = metrics.reg;
+            document.getElementById('met_val').innerText = metrics.val;
+            document.getElementById('met_med').innerText = metrics.med;
+            document.getElementById('met_per').innerText = metrics.per;
+        }
+    }
+
+    // Call init first time after load slightly delayed
+    setTimeout(pyGen, 500);
+</script>
+</body></html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode:"class",
+    theme:{ extend:{ colors:{
+        "surface-container-highest":"#e0e3e3","secondary":"#3d6a00","primary":"#003336",
+        "surface-container":"#ebeeee","surface":"#f7fafa","on-primary":"#ffffff",
+        "surface-container-lowest":"#ffffff","surface-variant":"#e0e3e3","primary-container":"#004b50",
+        "error-container":"#ffdad6","background":"#f7fafa","on-surface-variant":"#404849",
+        "on-surface":"#181c1d","surface-container-low":"#f1f4f4","surface-container-high":"#e6e9e9","error":"#ba1a1a"
+    }, fontFamily:{"headline":["Manrope"],"body":["Inter"]} } }
+}
+</script>
+<style>
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+    .bento-leaf { border-radius: 0.75rem 0.375rem 0.75rem 0.375rem; }
+    body::-webkit-scrollbar { width:8px; } body::-webkit-scrollbar-thumb { background:#b1edf2; border-radius:4px; }
+    .scroll-area::-webkit-scrollbar { width:6px; } .scroll-area::-webkit-scrollbar-thumb { background:#b1edf2; border-radius:3px; }
+    input:focus, select:focus, textarea:focus { border-color:#003336 !important; box-shadow:0 0 0 2px rgba(0,51,54,0.08); }
+    .tab-btn {
+        padding: 0.625rem 1.25rem; font-size:0.8125rem; font-weight:700;
+        border-bottom: 2px solid transparent; cursor:pointer; transition:all 0.15s;
+        color: #404849; white-space: nowrap;
+    }
+    .tab-btn.active { color:#003336; border-bottom-color:#003336; }
+    .tab-btn:hover:not(.active) { color:#003336; background: rgba(0,51,54,0.04); }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+    .field-group { margin-bottom:1rem; }
+    .field-label { display:block; font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#404849; margin-bottom:0.375rem; }
+    .field-input { width:100%; height:40px; border:1.5px solid #e0e3e3; border-radius:8px; padding:0 0.75rem; font-size:0.875rem; font-family:'Inter',sans-serif; background:#fff; color:#181c1d; outline:none; transition:border-color 0.2s; }
+    select.field-input { background:#fff; cursor:pointer; }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased flex flex-col min-h-screen">
+
+<!-- Header -->
+<header class="px-8 py-5 border-b border-surface-variant bg-surface-container-lowest shrink-0">
+    <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Fiscal / NFC-e</span>
+    <h1 class="text-3xl font-extrabold font-headline text-primary tracking-tight">Configuração da Empresa</h1>
+</header>
+
+<!-- Tabs nav -->
+<div class="bg-surface-container-lowest border-b border-surface-variant shrink-0">
+    <div class="flex px-8 gap-1">
+        <button class="tab-btn active" id="tab_empresa_btn" onclick="switchTab('empresa')">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">business</span>Empresa</span>
+        </button>
+        <button class="tab-btn" id="tab_endereco_btn" onclick="switchTab('endereco')">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">location_on</span>Endereço</span>
+        </button>
+        <button class="tab-btn" id="tab_nfce_btn" onclick="switchTab('nfce')">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">receipt_long</span>NFC-e</span>
+        </button>
+    </div>
+</div>
+
+<!-- Tab panels -->
+<div class="flex-1 overflow-y-auto scroll-area px-8 py-7">
+
+    <!-- Tab: Empresa -->
+    <div id="tab_empresa" class="tab-panel active max-w-2xl space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2 field-group">
+                <label class="field-label">Razão Social *</label>
+                <input type="text" id="e_razao" maxlength="60" placeholder="Razão social da empresa" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Nome Fantasia</label>
+                <input type="text" id="e_fantasia" maxlength="60" placeholder="Nome fantasia" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">CNPJ *</label>
+                <input type="text" id="e_cnpj" placeholder="00.000.000/0001-00" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Inscrição Estadual</label>
+                <input type="text" id="e_ie" placeholder="Inscrição Estadual" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Inscrição Municipal (opcional)</label>
+                <input type="text" id="e_im" placeholder="Inscrição Municipal" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">CNAE</label>
+                <input type="text" id="e_cnae" placeholder="Ex: 4530-7/03" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Regime Tributário</label>
+                <select id="e_regime" class="field-input">
+                    <option value="1">1 - Simples Nacional</option>
+                    <option value="2">2 - Simples Nacional - Excesso</option>
+                    <option value="3">3 - Regime Normal</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Endereço -->
+    <div id="tab_endereco" class="tab-panel max-w-2xl space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2 field-group">
+                <label class="field-label">Logradouro</label>
+                <input type="text" id="e_end" placeholder="Rua, Número, Complemento" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Bairro</label>
+                <input type="text" id="e_bairro" placeholder="Bairro" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Município</label>
+                <input type="text" id="e_municipio" placeholder="Cidade" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">UF</label>
+                <select id="e_uf" class="field-input">
+                    <option>AC</option><option>AL</option><option>AM</option><option>AP</option>
+                    <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+                    <option>GO</option><option>MA</option><option>MG</option><option>MS</option>
+                    <option>MT</option><option>PA</option><option>PB</option><option>PE</option>
+                    <option>PI</option><option>PR</option><option>RJ</option><option>RN</option>
+                    <option>RO</option><option>RR</option><option>RS</option><option>SC</option>
+                    <option selected>SP</option><option>SE</option><option>TO</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label class="field-label">CEP</label>
+                <input type="text" id="e_cep" placeholder="00000-000" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Telefone</label>
+                <input type="text" id="e_tel" placeholder="(DD) XXXXX-XXXX" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">E-mail</label>
+                <input type="email" id="e_email" placeholder="email@empresa.com.br" class="field-input"/>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: NFC-e -->
+    <div id="tab_nfce" class="tab-panel max-w-2xl">
+        <div class="p-4 mb-5 rounded-lg bg-primary/5 border border-primary/20 flex items-start gap-3">
+            <span class="material-symbols-outlined text-primary text-xl mt-0.5 shrink-0">info</span>
+            <p class="text-sm text-on-surface-variant">O CSC (Código de Segurança do Contribuinte) é obtido junto à SEFAZ do seu estado. Ambiente Homologação = Testes. Ambiente Produção = Notas Reais.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="field-group">
+                <label class="field-label">Série NFC-e</label>
+                <input type="text" id="nf_serie" placeholder="001" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Próxima NF-e (número)</label>
+                <input type="number" id="nf_prox" placeholder="1" min="1" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Ambiente</label>
+                <select id="nf_amb" class="field-input">
+                    <option value="2">2 - Homologação (Testes)</option>
+                    <option value="1">1 - Produção (Real)</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Código UF (cUF)</label>
+                <input type="text" id="nf_cuf" placeholder="Ex: 35=SP, 33=RJ" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Código Município (IBGE)</label>
+                <input type="text" id="nf_cmun" placeholder="Ex: 3550308 (São Paulo)" class="field-input"/>
+            </div>
+            <div class="field-group">
+                <label class="field-label">CSC ID</label>
+                <input type="text" id="nf_csc_id" placeholder="000001" class="field-input"/>
+            </div>
+            <div class="md:col-span-2 field-group">
+                <label class="field-label">CSC Token (SEFAZ)</label>
+                <input type="password" id="nf_csc_token" placeholder="Token CSC obtido na SEFAZ..." class="field-input"/>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<div class="px-8 py-4 border-t border-surface-variant bg-surface-container-lowest/80 flex justify-end gap-3 shrink-0">
+    <button onclick="pyClose()" class="px-5 py-2.5 rounded-lg font-bold text-sm bg-surface-container text-primary hover:bg-surface-container-high transition-colors">
+        Cancelar
+    </button>
+    <button onclick="saveFiscal()" class="px-6 py-2.5 rounded-lg font-bold text-sm bg-gradient-to-br from-primary to-primary-container text-on-primary hover:from-secondary hover:to-secondary-container transition-all shadow-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-[16px]">save</span> Salvar Configurações
+    </button>
+</div>
+
+<script>
+    var _currentTab = 'empresa';
+
+    function switchTab(tab) {
+        ['empresa','endereco','nfce'].forEach(function(t) {
+            document.getElementById('tab_' + t).classList.toggle('active', t === tab);
+            document.getElementById('tab_' + t + '_btn').classList.toggle('active', t === tab);
+        });
+        _currentTab = tab;
+    }
+
+    function initFiscal(data) {
+        data = data || {};
+        var emp  = data.empresa || {};
+        var nfce = data.nfce   || {};
+
+        // Empresa
+        document.getElementById('e_razao').value    = emp.razao_social   || '';
+        document.getElementById('e_fantasia').value = emp.nome_fantasia  || '';
+        document.getElementById('e_cnpj').value     = emp.cnpj           || '';
+        document.getElementById('e_ie').value       = emp.ie             || '';
+        document.getElementById('e_im').value       = emp.im             || '';
+        document.getElementById('e_cnae').value     = emp.cnae           || '';
+        setSelectByValue('e_regime', emp.regime || '1');
+
+        // Endereço
+        document.getElementById('e_end').value      = emp.endereco  || '';
+        document.getElementById('e_bairro').value   = emp.bairro    || '';
+        document.getElementById('e_municipio').value= emp.municipio || '';
+        setSelectByValue('e_uf', emp.uf || 'SP');
+        document.getElementById('e_cep').value      = emp.cep       || '';
+        document.getElementById('e_tel').value      = emp.telefone  || '';
+        document.getElementById('e_email').value    = emp.email     || '';
+
+        // NFC-e
+        document.getElementById('nf_serie').value     = nfce.serie       || '001';
+        document.getElementById('nf_prox').value      = nfce.proxima_nf  || 1;
+        setSelectByValue('nf_amb', nfce.ambiente || '2');
+        document.getElementById('nf_cuf').value      = nfce.cuf         || '35';
+        document.getElementById('nf_cmun').value     = nfce.cmun        || '3550308';
+        document.getElementById('nf_csc_id').value   = nfce.csc_id      || '000001';
+        document.getElementById('nf_csc_token').value= nfce.csc_token   || '';
+    }
+
+    function saveFiscal() {
+        var cnpj = document.getElementById('e_cnpj').value.trim();
+        if (!cnpj) { document.getElementById('e_cnpj').style.borderColor='#ba1a1a'; switchTab('empresa'); document.getElementById('e_cnpj').focus(); return; }
+
+        var params = new URLSearchParams({
+            // Empresa
+            razao_social:  document.getElementById('e_razao').value.trim(),
+            nome_fantasia: document.getElementById('e_fantasia').value.trim(),
+            cnpj:          cnpj,
+            ie:            document.getElementById('e_ie').value.trim(),
+            im:            document.getElementById('e_im').value.trim(),
+            cnae:          document.getElementById('e_cnae').value.trim(),
+            regime:        document.getElementById('e_regime').value,
+            // Endereço
+            endereco:      document.getElementById('e_end').value.trim(),
+            bairro:        document.getElementById('e_bairro').value.trim(),
+            municipio:     document.getElementById('e_municipio').value.trim(),
+            uf:            document.getElementById('e_uf').value,
+            cep:           document.getElementById('e_cep').value.trim(),
+            telefone:      document.getElementById('e_tel').value.trim(),
+            email:         document.getElementById('e_email').value.trim(),
+            // NFC-e
+            serie:         document.getElementById('nf_serie').value.trim().padStart(3,'0'),
+            proxima_nf:    document.getElementById('nf_prox').value || '1',
+            ambiente:      document.getElementById('nf_amb').value,
+            cuf:           document.getElementById('nf_cuf').value.trim(),
+            cmun:          document.getElementById('nf_cmun').value.trim(),
+            csc_id:        document.getElementById('nf_csc_id').value.trim(),
+            csc_token:     document.getElementById('nf_csc_token').value.trim(),
+        });
+        window.location.href = "py://action/save_fiscal?" + params.toString();
+    }
+
+    function pyClose() { window.location.href = "py://action/close_fiscal"; }
+
+    function setSelectByValue(id, val) {
+        var s = document.getElementById(id);
+        for(var i=0;i<s.options.length;i++){
+            if(s.options[i].value===val||s.options[i].text===val){s.selectedIndex=i;return;}
+        }
+    }
+</script>
+</body></html>

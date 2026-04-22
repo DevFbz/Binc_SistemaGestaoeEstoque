@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binc CMS — Sistema de Gestão</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #0F172A; color: #E2E8F0; overflow: hidden; margin: 0; }
+        
+        .sidebar {
+            background: linear-gradient(180deg, rgba(15,23,42,0.97) 0%, rgba(20,30,55,0.97) 100%);
+            border-right: 1px solid rgba(255,255,255,0.07);
+            box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+        }
+        
+        .nav-item {
+            transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #94a3b8;
+            user-select: none;
+        }
+        .nav-item:hover {
+            background: rgba(255, 107, 53, 0.12);
+            color: #FF6B35;
+        }
+        .nav-item.active {
+            background: linear-gradient(135deg, #FF6B35, #e8520a);
+            color: white;
+            box-shadow: 0 4px 14px rgba(255,107,53,0.35);
+        }
+        .nav-item .material-symbols-outlined { font-size: 20px; flex-shrink: 0; }
+
+        .nav-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #475569;
+            padding: 14px 14px 4px;
+        }
+
+        /* Iframe container — each tab gets one hidden iframe */
+        #content-area { position: relative; height: 100vh; overflow: hidden; background: #0F172A; }
+        .tab-frame {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+            background: transparent;
+        }
+        .tab-frame.active { display: block; }
+
+        /* Loader */
+        #loader {
+            position: absolute;
+            inset: 0;
+            background: #0F172A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 0.25s ease;
+        }
+        #loader.hidden-loader { opacity: 0; pointer-events: none; }
+
+        /* Spinner */
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid rgba(255,107,53,0.2);
+            border-top-color: #FF6B35;
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* User badge */
+        .user-badge {
+            background: rgba(255,107,53,0.12);
+            border: 1px solid rgba(255,107,53,0.25);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,107,53,0.3); border-radius: 10px; }
+
+        /* Footer btn */
+        .footer-btn {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 14px; border-radius: 8px;
+            font-size: 12.5px; font-weight: 500; color: #64748b;
+            cursor: pointer; transition: all 0.15s ease;
+        }
+        .footer-btn:hover { background: rgba(255,255,255,0.05); color: #94a3b8; }
+        .footer-btn.danger:hover { background: rgba(239,68,68,0.1); color: #f87171; }
+        .footer-btn .material-symbols-outlined { font-size: 18px; }
+    </style>
+</head>
+<body class="flex">
+
+    <!-- ══ SIDEBAR ═══════════════════════════════════════════════════ -->
+    <aside class="sidebar w-64 h-screen flex flex-col shrink-0 z-50" style="min-width:256px">
+
+        <!-- Logo -->
+        <div class="flex items-center gap-3 px-5 py-5 border-b border-white/5">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg" style="background:linear-gradient(135deg,#FF6B35,#e8520a)">
+                <span class="material-symbols-outlined text-white" style="font-size:18px">rocket_launch</span>
+            </div>
+            <div>
+                <h1 class="text-base font-bold text-white leading-none tracking-tight">Binc CMS</h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Management Suite</p>
+            </div>
+        </div>
+
+        <!-- Nav -->
+        <nav class="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
+
+            <div id="nav-Dashboard" onclick="navigate('Dashboard')" class="nav-item active">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Dashboard</span>
+            </div>
+
+            <div id="nav-Nova Venda" onclick="navigate('Nova Venda')" class="nav-item">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span>Nova Venda</span>
+            </div>
+
+            <div id="nav-Produtos" onclick="navigate('Produtos')" class="nav-item">
+                <span class="material-symbols-outlined">inventory_2</span>
+                <span>Produtos</span>
+            </div>
+
+            <div id="nav-Historico" onclick="navigate('Historico')" class="nav-item">
+                <span class="material-symbols-outlined">history</span>
+                <span>Histórico</span>
+            </div>
+
+            <div id="nav-Clientes" onclick="navigate('Clientes')" class="nav-item">
+                <span class="material-symbols-outlined">group</span>
+                <span>Clientes</span>
+            </div>
+
+            <div class="nav-section-label">Suporte &amp; Gestão</div>
+
+            <div id="nav-Trocas" onclick="navigate('Trocas')" class="nav-item">
+                <span class="material-symbols-outlined">swap_horiz</span>
+                <span>Trocas / Avarias</span>
+            </div>
+
+            <div id="nav-Faltas" onclick="navigate('Faltas')" class="nav-item">
+                <span class="material-symbols-outlined">list_alt</span>
+                <span>Lista de Faltas</span>
+            </div>
+
+            <div id="nav-Relatorios" onclick="navigate('Relatorios')" class="nav-item">
+                <span class="material-symbols-outlined">bar_chart</span>
+                <span>Relatórios</span>
+            </div>
+
+            <div id="nav-Usuarios" onclick="navigate('Usuarios')" class="nav-item" style="display:none">
+                <span class="material-symbols-outlined">manage_accounts</span>
+                <span>Usuários</span>
+            </div>
+
+            <div class="nav-section-label">Inteligência</div>
+
+            <div id="nav-BincIA" onclick="navigate('BincIA')" class="nav-item">
+                <span class="material-symbols-outlined">smart_toy</span>
+                <span>Binc IA</span>
+                <span style="margin-left:auto;background:linear-gradient(135deg,#FF6B35,#e8520a);color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;letter-spacing:0.05em">NOVO</span>
+            </div>
+        </nav>
+
+        <!-- Footer -->
+        <div class="px-3 pb-4 border-t border-white/5 pt-3 space-y-0.5">
+            <!-- User info -->
+            <div class="user-badge flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-sm font-bold text-white border border-slate-600 shrink-0" id="user-initial">A</div>
+                <div class="overflow-hidden">
+                    <p class="text-sm font-semibold text-white truncate leading-none" id="user-name">Usuário</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5" id="user-role">Operador</p>
+                </div>
+            </div>
+
+            <div onclick="pyFunc('settings')" class="footer-btn">
+                <span class="material-symbols-outlined">settings</span>
+                <span>Configurações</span>
+            </div>
+            <div onclick="pyFunc('logout')" class="footer-btn danger">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Sair do Sistema</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ══ CONTENT AREA ══════════════════════════════════════════════ -->
+    <main id="content-area" class="flex-1">
+        <!-- Loader overlay -->
+        <div id="loader">
+            <div style="text-align:center">
+                <div class="spinner"></div>
+                <p style="color:#475569;font-size:12px;margin-top:12px;letter-spacing:0.05em">Carregando...</p>
+            </div>
+        </div>
+
+        <!-- All tab iframes (created lazily on first visit) -->
+        <!-- Placeholder — iframes inserted by JS -->
+    </main>
+
+    <script>
+        // ── Tab → File mapping ────────────────────────────────────────
+        const TAB_MAP = {
+            'Dashboard':  'dashboard_theme.html',
+            'Nova Venda': 'caixa_theme.html',
+            'Produtos':   'products_theme.html',
+            'Historico':  'history_theme.html',
+            'Clientes':   'customers_theme.html',
+            'Trocas':     'trocas_theme.html',
+            'Faltas':     'faltas_theme.html',
+            'Relatorios': 'reports_theme.html',
+            'Usuarios':   'users_theme.html',
+            'BincIA':     'binc_ia_theme.html',
+        };
+
+        // Keep track of created iframes
+        const frameCache = {};
+        let currentTab = null;
+        let loaderTimer = null;
+
+        // ── Navigate to a tab ─────────────────────────────────────────
+        function navigate(tabName) {
+            if (tabName === currentTab) return;
+
+            // Update sidebar active state
+            if (currentTab) {
+                const prev = document.getElementById('nav-' + currentTab);
+                if (prev) prev.classList.remove('active');
+            }
+            const next = document.getElementById('nav-' + tabName);
+            if (next) next.classList.add('active');
+
+            // Show/create iframe
+            if (frameCache[currentTab]) {
+                frameCache[currentTab].classList.remove('active');
+            }
+
+            if (frameCache[tabName]) {
+                // Already loaded — show instantly, no delay
+                frameCache[tabName].classList.add('active');
+                hideLoader();
+            } else {
+                // First visit: create & load iframe
+                showLoader();
+                const file = TAB_MAP[tabName];
+                const iframe = document.createElement('iframe');
+                iframe.className = 'tab-frame active';
+                iframe.setAttribute('allowfullscreen', '');
+                iframe.onload = () => hideLoader();
+                // Use base path of current page
+                const base = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+                iframe.src = base + file;
+                document.getElementById('content-area').appendChild(iframe);
+                frameCache[tabName] = iframe;
+            }
+
+            currentTab = tabName;
+
+            // Tell Python which tab is now active (for data injection)
+            window.location.href = 'py://navigate?tab=' + encodeURIComponent(tabName);
+        }
+
+        // ── Loader helpers ────────────────────────────────────────────
+        function showLoader() {
+            clearTimeout(loaderTimer);
+            const l = document.getElementById('loader');
+            l.classList.remove('hidden-loader');
+            // Safety: hide after 4s no matter what
+            loaderTimer = setTimeout(hideLoader, 4000);
+        }
+        function hideLoader() {
+            clearTimeout(loaderTimer);
+            document.getElementById('loader').classList.add('hidden-loader');
+        }
+
+        // ── Shell API (called from Python via runJavaScript) ──────────
+        function initShell(userData) {
+            document.getElementById('user-name').innerText = userData.name || 'Usuário';
+            document.getElementById('user-role').innerText = userData.role === 'admin' ? 'Administrador' : 'Operador';
+            document.getElementById('user-initial').innerText = (userData.name || 'U')[0].toUpperCase();
+
+            if (userData.role === 'admin') {
+                const userNav = document.getElementById('nav-Usuarios');
+                if (userNav) userNav.style.display = 'flex';
+            }
+        }
+
+        // setFrameUrl — legacy compat, redirects to navigate
+        function setFrameUrl(url) {
+            // Extract tab name from URL
+            for (const [tab, file] of Object.entries(TAB_MAP)) {
+                if (url.includes(file)) { navigate(tab); return; }
+            }
+        }
+
+        // Run JS in the currently active tab iframe
+        function runInFrame(tabName, js) {
+            const frame = frameCache[tabName];
+            if (!frame || !frame.contentWindow) return;
+            try { frame.contentWindow.eval(js); } catch(e) {}
+        }
+
+        function pyFunc(action) {
+            window.location.href = 'py://' + action;
+        }
+
+        // ── Init: navigate to Dashboard ───────────────────────────────
+        window.addEventListener('load', () => {
+            navigate('Dashboard');
+        });
+    </script>
+</body>
+</html>

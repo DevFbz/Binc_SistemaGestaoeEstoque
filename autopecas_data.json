@@ -1,0 +1,53 @@
+{
+  "products": [
+    {
+      "code": "",
+      "barcode": "",
+      "name": "f3f3",
+      "category": "f3f34",
+      "brand": "f3",
+      "cost_price": 770.0,
+      "sale_price": 766.0,
+      "stock": 52,
+      "min_stock": 2,
+      "description": "",
+      "ncm": "",
+      "cfop": "5102",
+      "id": "8770202b-ef6",
+      "added_at": "2026-04-21T12:42:06.071520"
+    }
+  ],
+  "sales": [
+    {
+      "items": [
+        {
+          "product_id": "8770202b-ef6",
+          "name": "f3f3",
+          "qty": 1,
+          "unit_price": 766.0
+        }
+      ],
+      "customer_name": "Consumidor Final",
+      "payment": "PIX",
+      "total": 766.0,
+      "discount_pct": 0.0,
+      "status": "concluida",
+      "id": "77141e0f-e57",
+      "date": "2026-04-21T12:42:37.961720"
+    }
+  ],
+  "customers": [],
+  "users": [
+    {
+      "id": "admin-fixed",
+      "name": "Administrador",
+      "username": "admin",
+      "password": "admin",
+      "role": "admin",
+      "active": true
+    }
+  ],
+  "settings": {},
+  "trocas": [],
+  "faltas": []
+}

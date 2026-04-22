@@ -1,0 +1,323 @@
+{
+  "products": [
+    {
+      "id": "6d3c6742-9fec-4c3c-b100-0bddae40853e",
+      "code": "FLT001",
+      "name": "Filtro de Oleo",
+      "category": "Filtros",
+      "brand": "Bosch",
+      "unit": "UN",
+      "cost_price": 15.0,
+      "sale_price": 35.0,
+      "stock": 50,
+      "min_stock": 10,
+      "description": ""
+    },
+    {
+      "id": "750b6c0b-c9ab-4b7e-8512-a70346a4ab67",
+      "code": "FLT002",
+      "name": "Filtro de Ar",
+      "category": "Filtros",
+      "brand": "Mann",
+      "unit": "UN",
+      "cost_price": 20.0,
+      "sale_price": 45.0,
+      "stock": 30,
+      "min_stock": 8,
+      "description": ""
+    },
+    {
+      "id": "8b919aae-963b-4bb2-af29-b7223289be47",
+      "code": "FLT003",
+      "name": "Filtro de Combustivel",
+      "category": "Filtros",
+      "brand": "WIX",
+      "unit": "UN",
+      "cost_price": 18.0,
+      "sale_price": 40.0,
+      "stock": 25,
+      "min_stock": 5,
+      "description": ""
+    },
+    {
+      "id": "e97751f0-a089-4bbd-8ea5-3ece3b0846ad",
+      "code": "FRE001",
+      "name": "Pastilha de Freio Dianteira",
+      "category": "Freios",
+      "brand": "Bosch",
+      "unit": "JG",
+      "cost_price": 45.0,
+      "sale_price": 95.0,
+      "stock": 19,
+      "min_stock": 5,
+      "description": ""
+    },
+    {
+      "id": "13f2a37c-22cb-4999-9646-8633e61e58a8",
+      "code": "FRE002",
+      "name": "Disco de Freio Dianteiro",
+      "category": "Freios",
+      "brand": "Brembo",
+      "unit": "UN",
+      "cost_price": 80.0,
+      "sale_price": 165.0,
+      "stock": 15,
+      "min_stock": 4,
+      "description": ""
+    },
+    {
+      "id": "dff10c1f-cf47-4df9-b794-fdfc66b7f35d",
+      "code": "FRE003",
+      "name": "Fluido de Freio DOT4",
+      "category": "Freios",
+      "brand": "ATE",
+      "unit": "FR",
+      "cost_price": 12.0,
+      "sale_price": 28.0,
+      "stock": 38,
+      "min_stock": 10,
+      "description": ""
+    },
+    {
+      "id": "95424b54-5d67-4903-927e-0b5a5f23b859",
+      "code": "OLE001",
+      "name": "Oleo 5W30 Sintetico",
+      "category": "Oleos",
+      "brand": "Castrol",
+      "unit": "LT",
+      "cost_price": 28.0,
+      "sale_price": 55.0,
+      "stock": 100,
+      "min_stock": 20,
+      "description": ""
+    },
+    {
+      "id": "6195272e-2628-41a7-8d8b-d03ca7666e43",
+      "code": "OLE002",
+      "name": "Oleo 10W40 Semissintetico",
+      "category": "Oleos",
+      "brand": "Mobil",
+      "unit": "LT",
+      "cost_price": 22.0,
+      "sale_price": 45.0,
+      "stock": 80,
+      "min_stock": 15,
+      "description": ""
+    },
+    {
+      "id": "de3227c2-2d4d-45fb-a725-d8162a92b3e5",
+      "code": "OLE003",
+      "name": "Oleo de Cambio",
+      "category": "Oleos",
+      "brand": "Valvoline",
+      "unit": "LT",
+      "cost_price": 30.0,
+      "sale_price": 60.0,
+      "stock": 30,
+      "min_stock": 8,
+      "description": ""
+    },
+    {
+      "id": "1dd80dd7-2569-469e-9993-8b96e5c697ee",
+      "code": "BAT001",
+      "name": "Bateria 60Ah",
+      "category": "Eletrica",
+      "brand": "Moura",
+      "unit": "UN",
+      "cost_price": 280.0,
+      "sale_price": 450.0,
+      "stock": 9,
+      "min_stock": 3,
+      "description": ""
+    },
+    {
+      "id": "badb738d-3e26-4a79-a474-63728eca69ef",
+      "code": "ALT001",
+      "name": "Correia Alternador",
+      "category": "Motor",
+      "brand": "Dayco",
+      "unit": "UN",
+      "cost_price": 35.0,
+      "sale_price": 72.0,
+      "stock": 15,
+      "min_stock": 5,
+      "description": ""
+    },
+    {
+      "id": "a4de7704-3382-4006-8c15-eebf1fdb3adb",
+      "code": "SUS001",
+      "name": "Amortecedor Dianteiro",
+      "category": "Suspensao",
+      "brand": "Monroe",
+      "unit": "UN",
+      "cost_price": 120.0,
+      "sale_price": 220.0,
+      "stock": 8,
+      "min_stock": 2,
+      "description": ""
+    },
+    {
+      "id": "22963e8a-49e1-4025-946a-4c44fd9536a1",
+      "code": "SUS002",
+      "name": "Barra Estabilizadora",
+      "category": "Suspensao",
+      "brand": "TRW",
+      "unit": "UN",
+      "cost_price": 65.0,
+      "sale_price": 130.0,
+      "stock": 6,
+      "min_stock": 2,
+      "description": ""
+    },
+    {
+      "id": "e5ddf4b8-cd0e-4225-ab72-f85d6e86e71f",
+      "code": "RAD001",
+      "name": "Radiador",
+      "category": "Arrefecimento",
+      "brand": "Valeo",
+      "unit": "UN",
+      "cost_price": 350.0,
+      "sale_price": 620.0,
+      "stock": 4,
+      "min_stock": 1,
+      "description": ""
+    }
+  ],
+  "customers": [
+    {
+      "id": "9049671f-fbfe-4c07-b1c6-18560cd07ba4",
+      "name": "Joao Carlos Silva",
+      "cpf_cnpj": "123.456.789-00",
+      "phone": "(21) 98765-4321",
+      "email": "joao@email.com",
+      "address": "Rua das Flores, 100"
+    },
+    {
+      "id": "a88725d0-58bc-4ec5-9f71-2d3e7c9aa48b",
+      "name": "Maria Santos Oliveira",
+      "cpf_cnpj": "987.654.321-00",
+      "phone": "(21) 91234-5678",
+      "email": "maria@email.com",
+      "address": "Av. Brasil, 200"
+    },
+    {
+      "id": "99ff7ef3-394d-4b36-aa18-78193f75d0b7",
+      "name": "Auto Center Mega Ltda",
+      "cpf_cnpj": "12.345.678/0001-90",
+      "phone": "(21) 3333-4444",
+      "email": "contato@mega.com",
+      "address": "Rod. Dutra, 300"
+    },
+    {
+      "id": "24cac365-ff36-43b9-b289-2c8b7ebfa788",
+      "name": "Pedro Melo Mecanica",
+      "cpf_cnpj": "45.678.901/0001-23",
+      "phone": "(21) 97777-8888",
+      "email": "pedro@mec.com",
+      "address": "Rua Industrial, 55"
+    }
+  ],
+  "sales": [
+    {
+      "items": [
+        {
+          "product_id": "badb738d-3e26-4a79-a474-63728eca69ef",
+          "name": "Correia Alternador",
+          "qty": 3,
+          "unit_price": 72.0
+        },
+        {
+          "product_id": "1dd80dd7-2569-469e-9993-8b96e5c697ee",
+          "name": "Bateria 60Ah",
+          "qty": 1,
+          "unit_price": 450.0
+        },
+        {
+          "product_id": "ee907601-b704-4a91-bc41-2a9dcfa0c484",
+          "name": "Vela de Ignicao",
+          "qty": 1,
+          "unit_price": 25.0
+        },
+        {
+          "product_id": "dff10c1f-cf47-4df9-b794-fdfc66b7f35d",
+          "name": "Fluido de Freio DOT4",
+          "qty": 2,
+          "unit_price": 28.0
+        },
+        {
+          "product_id": "e97751f0-a089-4bbd-8ea5-3ece3b0846ad",
+          "name": "Pastilha de Freio Dianteira",
+          "qty": 1,
+          "unit_price": 95.0
+        }
+      ],
+      "customer_name": "Auto Center Mega Ltda",
+      "payment": "Dinheiro",
+      "total": 842.0,
+      "discount_pct": 0.0,
+      "status": "concluida",
+      "id": "eca301be-33b",
+      "date": "2026-04-20T20:27:48.449919"
+    }
+  ],
+  "users": [
+    {
+      "id": "admin-fixed",
+      "username": "admin",
+      "password": "admin",
+      "role": "admin",
+      "name": "Administrador",
+      "active": true
+    },
+    {
+      "id": "func-fixed",
+      "username": "funcionario",
+      "password": "123moto",
+      "role": "operator",
+      "name": "Funcionario",
+      "active": true
+    }
+  ],
+  "settings": {
+    "theme": "dark",
+    "background_image": "",
+    "accent_color": "#FF6B35",
+    "app_icon": "",
+    "nota_fiscal": {
+      "nome_loja": "MOTO PECAS & MECANICA",
+      "slogan": "Sistema de Gestao e Vendas",
+      "endereco": "",
+      "telefone": "",
+      "cnpj": "",
+      "rodape": "Obrigado pela preferencia!"
+    },
+    "meu_whatsapp": ""
+  },
+  "empresa": {
+    "razao_social": "MOTO PECAS E MECANICA LTDA",
+    "nome_fantasia": "MOTO PECAS",
+    "cnpj": "00.000.000/0001-00",
+    "ie": "000.000.000.000",
+    "im": "",
+    "endereco": "Rua das Pecas, 100",
+    "bairro": "Centro",
+    "municipio": "Sao Paulo",
+    "uf": "SP",
+    "cep": "01000-000",
+    "telefone": "(11) 0000-0000",
+    "email": "",
+    "regime": "1",
+    "cnae": "4530-7/03"
+  },
+  "nfce": {
+    "serie": "001",
+    "proxima_nf": 1,
+    "ambiente": "2",
+    "csc_id": "000001",
+    "csc_token": "AAAA0000000000000000000000000000",
+    "cuf": "35",
+    "cmun": "3550308"
+  },
+  "trocas": [],
+  "faltas": []
+}

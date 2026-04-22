@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background:#0F172A; color:#e2e8f0; margin:0; }
+    body::-webkit-scrollbar { width:6px; }
+    body::-webkit-scrollbar-thumb { background:rgba(255,107,53,0.3); border-radius:6px; }
+    .card { background:rgba(30,41,59,0.7); border:1px solid rgba(255,255,255,0.07); border-radius:14px; }
+    .card-hover { transition: all 0.2s ease; }
+    .card-hover:hover { background:rgba(30,41,59,0.9); border-color:rgba(255,107,53,0.2); transform:translateY(-1px); }
+    .badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.02em; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .fade-up { animation: fadeUp 0.35s ease forwards; }
+    .action-btn {
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        gap:8px; padding:16px 12px; border-radius:12px; cursor:pointer;
+        background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
+        transition:all 0.2s ease; color:#94a3b8; font-size:12px; font-weight:600;
+    }
+    .action-btn:hover { background:rgba(255,107,53,0.12); border-color:rgba(255,107,53,0.3); color:#FF6B35; transform:translateY(-2px); }
+    .action-btn .material-symbols-outlined { font-size:22px; transition:transform 0.2s; }
+    .action-btn:hover .material-symbols-outlined { transform:scale(1.1); }
+    .stat-change { font-size:11px; padding:2px 8px; border-radius:20px; font-weight:600; }
+</style>
+</head>
+<body class="min-h-screen">
+<main class="px-7 py-7 min-h-screen">
+
+    <!-- ── Header ──────────────────────────────────────────────── -->
+    <header class="mb-8 flex items-end justify-between gap-4 fade-up">
+        <div>
+            <span style="font-size:11px;font-weight:700;color:#FF6B35;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:4px">● Dashboard</span>
+            <h1 style="font-size:28px;font-weight:800;color:white;line-height:1.1;margin:0">Visão Geral</h1>
+            <p style="font-size:13px;color:#64748b;margin-top:4px" id="dash-date">Carregando...</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="pySwitchTab('Relatorios')" style="padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                <span style="display:flex;align-items:center;gap:6px"><span class="material-symbols-outlined" style="font-size:16px">bar_chart</span>Relatório</span>
+            </button>
+            <button onclick="pySwitchTab('Nova Venda')" style="padding:9px 18px;border-radius:10px;font-size:13px;font-weight:700;background:linear-gradient(135deg,#FF6B35,#e8520a);color:white;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(255,107,53,0.35);transition:all 0.2s" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                <span style="display:flex;align-items:center;gap:6px"><span class="material-symbols-outlined" style="font-size:16px">add</span>Nova Venda</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ── Metric Cards ─────────────────────────────────────────── -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px">
+
+        <div class="card card-hover fade-up" style="padding:22px;animation-delay:0.05s">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+                <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,107,53,0.15);display:flex;align-items:center;justify-content:center">
+                    <span class="material-symbols-outlined" style="color:#FF6B35;font-size:22px">payments</span>
+                </div>
+                <span class="stat-change" style="background:rgba(16,185,129,0.1);color:#10b981">Este mês</span>
+            </div>
+            <p style="font-size:12px;color:#64748b;margin-bottom:6px;font-weight:500">Faturamento (Mês)</p>
+            <h3 style="font-size:26px;font-weight:800;color:white;margin:0" id="val_month_revenue">R$ 0,00</h3>
+        </div>
+
+        <div class="card card-hover fade-up" style="padding:22px;animation-delay:0.1s">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+                <div style="width:40px;height:40px;border-radius:12px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center">
+                    <span class="material-symbols-outlined" style="color:#3b82f6;font-size:22px">point_of_sale</span>
+                </div>
+                <span class="stat-change" style="background:rgba(59,130,246,0.1);color:#3b82f6">Hoje</span>
+            </div>
+            <p style="font-size:12px;color:#64748b;margin-bottom:6px;font-weight:500">Vendas de Hoje</p>
+            <h3 style="font-size:26px;font-weight:800;color:white;margin:0" id="val_today_sales">R$ 0,00</h3>
+        </div>
+
+        <div class="card card-hover fade-up" style="padding:22px;animation-delay:0.15s">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+                <div style="width:40px;height:40px;border-radius:12px;background:rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:center">
+                    <span class="material-symbols-outlined" style="color:#ef4444;font-size:22px">warning</span>
+                </div>
+                <span class="stat-change" style="background:rgba(239,68,68,0.1);color:#ef4444">Atenção</span>
+            </div>
+            <p style="font-size:12px;color:#64748b;margin-bottom:6px;font-weight:500">Estoque Crítico</p>
+            <h3 style="font-size:26px;font-weight:800;color:white;margin:0"><span id="val_low_stock">0</span> <span style="font-size:14px;color:#64748b;font-weight:500">itens</span></h3>
+        </div>
+    </div>
+
+    <!-- ── Chart + Quick Actions ────────────────────────────────── -->
+    <div style="display:grid;grid-template-columns:1fr 280px;gap:16px;margin-bottom:20px">
+
+        <!-- Chart -->
+        <div class="card fade-up" style="padding:24px;animation-delay:0.15s">
+            <div style="margin-bottom:20px">
+                <h4 style="font-size:16px;font-weight:700;color:white;margin:0">Volume de Vendas — 7 dias</h4>
+                <p style="font-size:12px;color:#64748b;margin-top:4px">Distribuição diária (excluindo cancelamentos)</p>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:8px;height:140px;padding-bottom:4px" id="val_chart_bars">
+                <!-- injected -->
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:10px;gap:8px" id="val_chart_labels">
+                <!-- injected -->
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card fade-up" style="padding:20px;animation-delay:0.2s">
+            <h4 style="font-size:14px;font-weight:700;color:white;margin:0 0 16px">Ações Rápidas</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="action-btn" onclick="pySwitchTab('Produtos');pyAction('import_xml')">
+                    <span class="material-symbols-outlined">upload_file</span>
+                    <span>Importar XML</span>
+                </div>
+                <div class="action-btn" onclick="pySwitchTab('Nova Venda')">
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                    <span>Novo PDV</span>
+                </div>
+                <div class="action-btn" onclick="pySwitchTab('Historico')">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>Histórico</span>
+                </div>
+                <div class="action-btn" onclick="pySwitchTab('Faltas')">
+                    <span class="material-symbols-outlined">list_alt</span>
+                    <span>Lista Faltas</span>
+                </div>
+                <div class="action-btn" onclick="pySwitchTab('BincIA')" style="grid-column:span 2;flex-direction:row;justify-content:center;gap:10px;background:rgba(255,107,53,0.08);border-color:rgba(255,107,53,0.2);color:#FF6B35">
+                    <span class="material-symbols-outlined">smart_toy</span>
+                    <span>Binc IA — Pergunte algo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Recent Sales Table ────────────────────────────────────── -->
+    <div class="card fade-up" style="overflow:hidden;animation-delay:0.25s">
+        <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between">
+            <h4 style="font-size:15px;font-weight:700;color:white;margin:0">Vendas Recentes</h4>
+            <button onclick="pySwitchTab('Historico')" style="font-size:12px;color:#FF6B35;background:none;border:none;cursor:pointer;font-weight:600">Ver todas →</button>
+        </div>
+        <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse">
+                <thead>
+                    <tr style="background:rgba(255,255,255,0.03)">
+                        <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em">ID</th>
+                        <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em">Data/Hora</th>
+                        <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em">Cliente</th>
+                        <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em">Itens</th>
+                        <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em">Status</th>
+                        <th style="padding:12px 20px;text-align:right;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em">Valor</th>
+                    </tr>
+                </thead>
+                <tbody id="recent_activity">
+                    <tr>
+                        <td colspan="6" style="padding:32px;text-align:center;color:#475569;font-size:13px">Carregando vendas...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+<script>
+    // Update date header
+    const now = new Date();
+    document.getElementById('dash-date').innerText = now.toLocaleDateString('pt-BR', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+    // Python injects data via these functions
+    function updateDashboard(revenue, today, lowStock) {
+        document.getElementById('val_month_revenue').innerText = revenue;
+        document.getElementById('val_today_sales').innerText = today;
+        document.getElementById('val_low_stock').innerText = lowStock;
+    }
+    function updateRecentActivity(htmlContent) {
+        document.getElementById('recent_activity').innerHTML = htmlContent;
+    }
+    function updateChart(barsHtml, labelsHtml) {
+        document.getElementById('val_chart_bars').innerHTML = barsHtml;
+        document.getElementById('val_chart_labels').innerHTML = labelsHtml;
+    }
+
+    // Navigate parent shell to another tab
+    function pySwitchTab(tab) {
+        try { window.parent.navigate(tab); } catch(e) {}
+        window.location.href = 'py://navigate?tab=' + encodeURIComponent(tab);
+    }
+    function pyAction(action) {
+        window.location.href = 'py://action/' + action;
+    }
+</script>
+</body>
+</html>

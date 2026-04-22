@@ -28,8 +28,6 @@ from PyQt5.QtGui import (
 V2_DIR   = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(V2_DIR)
 DATA_FILE = os.path.join(BASE_DIR, "autopecas_data.json")
-FALTAS_FILE = os.path.join(BASE_DIR, "faltas.json")
-TROCAS_FILE = os.path.join(BASE_DIR, "trocas.json")
 MACHINE_CONFIG = os.path.join(BASE_DIR, "machine_config.json")
 _PIN_CODE = "8602"
 
@@ -54,6 +52,7 @@ ERROR   = "#EF4444"
 WARN    = "#F59E0B"
 INFO    = "#3B82F6"
 SIDEBAR = "#FFFFFF"
+INPUT_BG= "#F1F5F9"
 
 QSS = f"""
 * {{ font-family: 'Segoe UI', 'Inter', Arial, sans-serif; color: {TEXT}; }}
@@ -142,7 +141,7 @@ QHeaderView::section {{
 
 /* ── Line Edits ── */
 QLineEdit, QTextEdit, QComboBox, QSpinBox, QDoubleSpinBox {{
-    background: {BG}; border: 1.5px solid {BORDER};
+    background: {INPUT_BG}; border: 1.5px solid {BORDER};
     border-radius: 10px; padding: 8px 12px;
     font-size: 13px; color: {TEXT};
 }}
@@ -150,6 +149,9 @@ QLineEdit:focus, QTextEdit:focus, QComboBox:focus,
 QSpinBox:focus, QDoubleSpinBox:focus {{
     border-color: {ORANGE};
     background: {CARD};
+}}
+QSpinBox::up-button, QSpinBox::down-button, QDoubleSpinBox::up-button, QDoubleSpinBox::down-button {{
+    width: 0px; border: none; background: transparent;
 }}
 QComboBox::drop-down {{ border: none; width: 24px; }}
 QComboBox QAbstractItemView {{
@@ -211,7 +213,7 @@ QStatusBar {{ background: {CARD}; border-top: 1px solid {BORDER}; color: {TEXT2}
 
 /* ── Search bar ── */
 QLineEdit#search_bar {{
-    background: {BG}; border: 1.5px solid {BORDER};
+    background: {INPUT_BG}; border: 1.5px solid {BORDER};
     border-radius: 22px; padding: 8px 16px 8px 36px;
     font-size: 13px;
 }}
@@ -234,22 +236,25 @@ QLabel#badge_orange {{ background:{ORANGE_L}; color:{ORANGE}; border-radius:10px
 /* ── Icon action buttons ── */
 QPushButton#btn_icon_edit {{
     background: #EFF6FF; border: 1.5px solid #BFDBFE;
-    border-radius: 10px; color: {INFO}; font-size: 16px;
-    min-width: 34px; max-width: 34px; min-height: 34px; max-height: 34px;
+    border-radius: 8px; color: {INFO}; font-size: 13px;
+    min-width: 28px; max-width: 28px; min-height: 28px; max-height: 28px;
+    padding: 0px; margin: 0px;
 }}
 QPushButton#btn_icon_edit:hover {{ background: #DBEAFE; border-color: {INFO}; }}
 
 QPushButton#btn_icon_del {{
     background: #FEF2F2; border: 1.5px solid #FCA5A5;
-    border-radius: 10px; color: {ERROR}; font-size: 16px;
-    min-width: 34px; max-width: 34px; min-height: 34px; max-height: 34px;
+    border-radius: 8px; color: {ERROR}; font-size: 13px;
+    min-width: 28px; max-width: 28px; min-height: 28px; max-height: 28px;
+    padding: 0px; margin: 0px;
 }}
 QPushButton#btn_icon_del:hover {{ background: #FEE2E2; border-color: {ERROR}; }}
 
 QPushButton#btn_icon_warn {{
     background: #FFFBEB; border: 1.5px solid #FCD34D;
-    border-radius: 10px; color: {WARN}; font-size: 16px;
-    min-width: 34px; max-width: 34px; min-height: 34px; max-height: 34px;
+    border-radius: 8px; color: {WARN}; font-size: 13px;
+    min-width: 28px; max-width: 28px; min-height: 28px; max-height: 28px;
+    padding: 0px; margin: 0px;
 }}
 QPushButton#btn_icon_warn:hover {{ background: #FEF3C7; border-color: {WARN}; }}
 """
@@ -273,6 +278,9 @@ class DataManager:
         self._data.setdefault("customers", [])
         self._data.setdefault("users", [{"id":"admin-fixed","name":"Administrador","username":"admin","password":"admin","role":"admin","active":True}])
         self._data.setdefault("settings", {})
+        self._data.setdefault("trocas", [])
+        self._data.setdefault("faltas", [])
+        self._save()
 
     def _save(self):
         try:
@@ -347,35 +355,21 @@ class DataManager:
 
     # Trocas
     def get_trocas(self):
-        try:
-            if os.path.exists(TROCAS_FILE):
-                with open(TROCAS_FILE, "r", encoding="utf-8") as f:
-                    return json.load(f)
-        except: pass
-        return []
+        return self._data.get("trocas", [])
     def save_trocas(self, trocas):
-        try:
-            with open(TROCAS_FILE, "w", encoding="utf-8") as f:
-                json.dump(trocas, f, ensure_ascii=False, indent=2)
-        except: pass
+        self._data["trocas"] = trocas
+        self._save()
     def add_troca(self, t):
         t.setdefault("id", str(uuid.uuid4())[:12])
         t.setdefault("date", datetime.now().isoformat())
-        trocas = self.get_trocas(); trocas.append(t); self.save_trocas(trocas)
+        self._data["trocas"].append(t); self._save()
 
     # Faltas
     def get_faltas(self):
-        try:
-            if os.path.exists(FALTAS_FILE):
-                with open(FALTAS_FILE, "r", encoding="utf-8") as f:
-                    return json.load(f)
-        except: pass
-        return []
+        return self._data.get("faltas", [])
     def save_faltas(self, f):
-        try:
-            with open(FALTAS_FILE, "w", encoding="utf-8") as f2:
-                json.dump(f, f2, ensure_ascii=False, indent=2)
-        except: pass
+        self._data["faltas"] = f
+        self._save()
 
 
 def _is_activated():
@@ -432,9 +426,59 @@ def icon_char(char, color=TEXT, size=18):
 
 
 # ═══════════════════════════════════════════════════════════════
-#  CUSTOM DIALOGS
+#  BASE MODALS & CUSTOM DIALOGS
 # ═══════════════════════════════════════════════════════════════
-class ConfirmDialog(QDialog):
+class DraggableDialog(QDialog):
+    """Base para dialogs que podem ser arrastados com o mouse."""
+    def mousePressEvent(self, e):
+        if e.button() == Qt.LeftButton:
+            self._drag_pos = e.globalPos() - self.pos()
+            e.accept()
+    def mouseMoveEvent(self, e):
+        if e.buttons() == Qt.LeftButton and hasattr(self, '_drag_pos'):
+            self.move(e.globalPos() - self._drag_pos)
+            e.accept()
+
+class ModernFormDialog(DraggableDialog):
+    """Base para modais branco moderno e clean, com sombra e bordas arredondadas."""
+    def __init__(self, parent=None, min_width=400):
+        super().__init__(parent)
+        self.setModal(True)
+        self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self.setMinimumWidth(min_width)
+
+        self._outer = QVBoxLayout(self)
+        self._outer.setContentsMargins(16, 16, 16, 16)
+        
+        self.container = QFrame()
+        self.container.setObjectName("binc_modal_container")
+        self.container.setStyleSheet(
+            f"QFrame#binc_modal_container {{background:{CARD};border-radius:20px;border:1px solid {BORDER};"
+            f"padding:0px;}}"
+        )
+        
+        self.main_lay = QVBoxLayout(self.container)
+        self.main_lay.setContentsMargins(24, 20, 24, 20)
+        self.main_lay.setSpacing(14)
+        
+        self._outer.addWidget(self.container)
+        
+    def add_title_bar(self, title):
+        top_row = QHBoxLayout()
+        tlbl = QLabel(title)
+        tlbl.setStyleSheet(f"font-size:18px;font-weight:800;color:{TEXT};background:transparent;border:none;")
+        top_row.addWidget(tlbl)
+        top_row.addStretch()
+        btn_close = QPushButton("✕")
+        btn_close.setStyleSheet(f"background:transparent; border:none; font-size:16px; color:{TEXT3}; font-weight:bold;")
+        btn_close.setCursor(Qt.PointingHandCursor)
+        btn_close.clicked.connect(self.reject)
+        top_row.addWidget(btn_close)
+        self.main_lay.addLayout(top_row)
+        self.main_lay.addSpacing(8)
+
+class ConfirmDialog(DraggableDialog):
     """Modern frameless confirmation dialog with soft shadow."""
     def __init__(self, parent, title, message, icon="⚠️", danger=False, confirm_text=None):
         super().__init__(parent)
@@ -512,7 +556,7 @@ class ConfirmDialog(QDialog):
         return dlg.exec_() == QDialog.Accepted
 
 
-class AlertDialog(QDialog):
+class AlertDialog(DraggableDialog):
     """Modern frameless single-button info/success dialog."""
     def __init__(self, parent, title, message, icon="ℹ️"):
         super().__init__(parent)
@@ -941,8 +985,8 @@ class MainWindow(QMainWindow):
         dlg.exec_()
 
     def _logout(self):
-        if QMessageBox.question(self,"Sair","Deseja sair?",
-                                QMessageBox.Yes|QMessageBox.No)==QMessageBox.Yes:
+        if ConfirmDialog.ask(self, "Sair do Sistema",
+                             "Tem certeza que deseja sair?", "🚪"):
             self.close()
             win = LoginWindow(); win.show()
             scr = QApplication.instance().primaryScreen().geometry()
@@ -1111,11 +1155,20 @@ class ProductsTab(QWidget):
         card = make_card(); cl = QVBoxLayout(card); cl.setContentsMargins(0,0,0,0)
         self.tbl = QTableWidget(0, 7)
         self.tbl.setHorizontalHeaderLabels(["Código","Nome","Categoria","Estoque","Mínimo","Preço Venda","Ações"])
-        self.tbl.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.tbl.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tbl.verticalHeader().setVisible(False)
         self.tbl.setShowGrid(False); self.tbl.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tbl.verticalHeader().setDefaultSectionSize(44)
+        
+        self.tbl.setColumnWidth(0, 120)
+        self.tbl.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.tbl.setColumnWidth(2, 170)
+        self.tbl.setColumnWidth(3, 96)
+        self.tbl.setColumnWidth(4, 96)
+        self.tbl.setColumnWidth(5, 120)
+        
+        self.tbl.horizontalHeader().setSectionResizeMode(6, QHeaderView.Fixed)
+        self.tbl.setColumnWidth(6, 110)
         cl.addWidget(self.tbl)
         lay.addWidget(card, 1)
 
@@ -1145,16 +1198,21 @@ class ProductsTab(QWidget):
                 if c == 6: continue
                 it = QTableWidgetItem(v)
                 if c == 3 and stk <= mn: it.setForeground(QColor(ERROR))
-                if c == 5: it.setForeground(QColor(ORANGE))
+                if c in [3, 4]: it.setTextAlignment(Qt.AlignCenter)
+                if c == 5: 
+                    it.setForeground(QColor(ORANGE))
+                    it.setTextAlignment(Qt.AlignCenter)
                 self.tbl.setItem(r, c, it)
-            # Actions
-            w = QWidget(); wl = QHBoxLayout(w); wl.setContentsMargins(4,2,4,2); wl.setSpacing(4)
+            # Actions — icon buttons
+            w = QWidget(); wl = QHBoxLayout(w); wl.setContentsMargins(0,0,0,0); wl.setSpacing(6); wl.setAlignment(Qt.AlignCenter)
             pid = p["id"]
-            be = QPushButton("Editar"); be.setObjectName("btn_secondary"); be.setFixedSize(60,28)
+            be = QPushButton("✏️"); be.setObjectName("btn_icon_edit"); be.setFixedSize(28,28)
+            be.setToolTip("Editar produto"); be.setCursor(Qt.PointingHandCursor)
             be.clicked.connect(lambda _, i=pid: self._edit(i))
-            bd = QPushButton("Excluir"); bd.setObjectName("btn_danger"); bd.setFixedSize(60,28)
+            bd = QPushButton("🗑"); bd.setObjectName("btn_icon_del"); bd.setFixedSize(28,28)
+            bd.setToolTip("Excluir produto"); bd.setCursor(Qt.PointingHandCursor)
             bd.clicked.connect(lambda _, i=pid: self._delete(i))
-            wl.addWidget(be); wl.addWidget(bd); wl.addStretch()
+            wl.addWidget(be); wl.addWidget(bd)
             self.tbl.setCellWidget(r, 6, w)
 
     def _add(self):
@@ -1168,48 +1226,110 @@ class ProductsTab(QWidget):
         if dlg.exec_() == QDialog.Accepted: self.refresh()
 
     def _delete(self, pid):
-        if QMessageBox.question(self,"Excluir","Excluir produto?",
-                                QMessageBox.Yes|QMessageBox.No)==QMessageBox.Yes:
+        if ConfirmDialog.ask(self, "Excluir Produto",
+                             "Tem certeza? Esta ação não pode ser desfeita.",
+                             "🗑️", danger=True):
             self.dm.delete_product(pid); self.refresh()
 
 
-class ProductDialog(QDialog):
+class ProductDialog(ModernFormDialog):
     def __init__(self, parent, dm, product=None):
-        super().__init__(parent); self.dm = dm; self.product = product
-        self.setWindowTitle("Novo Produto" if not product else "Editar Produto")
-        self.setMinimumWidth(520); self.setModal(True)
+        super().__init__(parent, min_width=560)
+        self.dm = dm; self.product = product
+        self.add_title_bar("Cadastro de Produto" if not product else "Editar Produto")
         self._build()
 
     def _build(self):
-        lay = QVBoxLayout(self); lay.setContentsMargins(28,24,28,24); lay.setSpacing(16)
-        title = make_label("Novo Produto" if not self.product else "Editar Produto", 18, bold=True)
-        lay.addWidget(title)
-
-        form = QFormLayout(); form.setSpacing(12)
+        lay = self.main_lay
+        
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setObjectName("prod_scroll")
+        scroll.setStyleSheet("QScrollArea#prod_scroll { background:transparent; border:none; } QScrollArea#prod_scroll > QWidget { background:transparent; }")
+        scroll.setMinimumHeight(440)
+        
+        inner = QWidget()
+        inner.setObjectName("prod_inner")
+        inner.setStyleSheet("QWidget#prod_inner { background:transparent; }")
+        form = QFormLayout(inner)
+        form.setSpacing(12)
+        
         self.e_code = QLineEdit(self.product.get("code","") if self.product else "")
+        self.e_code.setPlaceholderText("Codigo interno ou EAN — leia o codigo de barras aqui")
+
+        self.cb_gtin = QComboBox()
+        self.cb_gtin.addItem("Sem busca por API")
+        self.cb_gtin.addItem("Buscar por API GTIN")
+        btn_gtin = make_btn("Consultar GTIN", "secondary")
+        hl_gtin = QHBoxLayout(); hl_gtin.setContentsMargins(0,0,0,0)
+        hl_gtin.addWidget(self.cb_gtin, 1)
+        hl_gtin.addWidget(btn_gtin)
+
         self.e_name = QLineEdit(self.product.get("name","") if self.product else "")
         self.e_cat  = QLineEdit(self.product.get("category","") if self.product else "")
         self.e_brand = QLineEdit(self.product.get("brand","") if self.product else "")
+        
+        self.e_unidade = QComboBox()
+        self.e_unidade.addItems(["UN", "PC", "CX", "KG", "LT", "M", "JG"])
+        
         self.e_cost = QDoubleSpinBox(); self.e_cost.setRange(0,9999999); self.e_cost.setPrefix("R$ ")
         self.e_cost.setValue(self.product.get("cost_price",0) if self.product else 0)
+        
         self.e_sale = QDoubleSpinBox(); self.e_sale.setRange(0,9999999); self.e_sale.setPrefix("R$ ")
         self.e_sale.setValue(self.product.get("sale_price",0) if self.product else 0)
+        
         self.e_stock = QSpinBox(); self.e_stock.setRange(0,99999)
         self.e_stock.setValue(self.product.get("stock",0) if self.product else 0)
+        
         self.e_min = QSpinBox(); self.e_min.setRange(0,9999)
         self.e_min.setValue(self.product.get("min_stock",2) if self.product else 2)
-        self.e_barcode = QLineEdit(self.product.get("barcode","") if self.product else "")
-        for w in [self.e_code, self.e_name, self.e_cat, self.e_brand, self.e_barcode,
-                  self.e_cost, self.e_sale, self.e_stock, self.e_min]:
-            w.setFixedHeight(38)
-        form.addRow("Código:", self.e_code); form.addRow("Nome *:", self.e_name)
-        form.addRow("Categoria:", self.e_cat); form.addRow("Marca:", self.e_brand)
-        form.addRow("Preço Custo:", self.e_cost); form.addRow("Preço Venda:", self.e_sale)
-        form.addRow("Estoque:", self.e_stock); form.addRow("Estoque Mínimo:", self.e_min)
-        form.addRow("Código de Barras:", self.e_barcode)
-        lay.addLayout(form)
+        
+        self.e_desc = QLineEdit(self.product.get("description","") if self.product else "")
+        
+        self.e_ncm = QLineEdit(self.product.get("ncm","") if self.product else "")
+        self.e_ncm.setPlaceholderText("Ex: 87089990 (8 digitos)")
+        
+        self.e_cfop = QLineEdit(self.product.get("cfop","5102") if self.product else "5102")
+        
+        self.e_csosn = QComboBox()
+        self.e_csosn.addItem("400 - Nao tributada (Simples)")
+        self.e_csosn.addItem("102 - Tributada pelo Simples")
+        self.e_csosn.addItem("500 - ICMS cobrado ant.")
+        
+        self.e_origem = QComboBox()
+        self.e_origem.addItem("0 - Nacional")
+        self.e_origem.addItem("1 - Estrangeira Importacao")
+        self.e_origem.addItem("2 - Estrangeira Interno")
+        
+        self.chk_markup = QCheckBox("Preco Venda = Custo + 30%")
+        self.chk_markup.setStyleSheet(f"color:{TEXT2}; font-weight:bold;")
+        
+        for w in [self.e_code, self.cb_gtin, self.e_name, self.e_cat, self.e_brand, self.e_unidade,
+                  self.e_cost, self.e_sale, self.e_stock, self.e_min, self.e_desc, self.e_ncm,
+                  self.e_cfop, self.e_csosn, self.e_origem, btn_gtin]:
+            if isinstance(w, QWidget): w.setFixedHeight(38)
+            
+        form.addRow("Codigo *", self.e_code)
+        form.addRow("API GTIN", hl_gtin)
+        form.addRow("Nome *", self.e_name)
+        form.addRow("Categoria", self.e_cat)
+        form.addRow("Marca", self.e_brand)
+        form.addRow("Unidade", self.e_unidade)
+        form.addRow("Custo", self.e_cost)
+        form.addRow("Preco Venda *", self.e_sale)
+        form.addRow("Estoque", self.e_stock)
+        form.addRow("Minimo", self.e_min)
+        form.addRow("Descricao", self.e_desc)
+        form.addRow("NCM (Fiscal)", self.e_ncm)
+        form.addRow("CFOP (Fiscal)", self.e_cfop)
+        form.addRow("CSOSN (Fiscal)", self.e_csosn)
+        form.addRow("Origem (Fiscal)", self.e_origem)
+        form.addRow("Markup", self.chk_markup)
+        
+        scroll.setWidget(inner)
+        lay.addWidget(scroll, 1)
         lay.addWidget(make_divider())
-
+        
         brow = QHBoxLayout(); brow.addStretch()
         bcancel = make_btn("Cancelar","secondary"); bcancel.clicked.connect(self.reject)
         bsave   = make_btn("Salvar Produto","primary"); bsave.clicked.connect(self._save)
@@ -1219,12 +1339,20 @@ class ProductDialog(QDialog):
     def _save(self):
         name = self.e_name.text().strip()
         if not name: QMessageBox.warning(self,"Aviso","Nome obrigatório."); return
+        code = self.e_code.text().strip()
         data = {
-            "code": self.e_code.text().strip(), "name": name,
-            "category": self.e_cat.text().strip(), "brand": self.e_brand.text().strip(),
-            "cost_price": self.e_cost.value(), "sale_price": self.e_sale.value(),
-            "stock": self.e_stock.value(), "min_stock": self.e_min.value(),
-            "barcode": self.e_barcode.text().strip(),
+            "code": code,
+            "barcode": code,
+            "name": name,
+            "category": self.e_cat.text().strip(), 
+            "brand": self.e_brand.text().strip(),
+            "cost_price": self.e_cost.value(), 
+            "sale_price": self.e_sale.value(),
+            "stock": self.e_stock.value(), 
+            "min_stock": self.e_min.value(),
+            "description": self.e_desc.text().strip(),
+            "ncm": self.e_ncm.text().strip(),
+            "cfop": self.e_cfop.text().strip(),
         }
         if self.product:
             data["id"] = self.product["id"]
@@ -1370,7 +1498,9 @@ class SalesTab(QWidget):
         p = self.dm.get_product_by_id(pid)
         if not p: return
         if p.get("stock",0) <= 0:
-            QMessageBox.warning(self,"Sem Estoque",f"{p['name']} sem estoque."); return
+            AlertDialog.show_info(self, "Sem Estoque",
+                f"{p['name']} está sem estoque no momento.", "⚠️")
+            return
         for item in self.cart:
             if item["product_id"] == pid: item["qty"] += 1; self._update_cart_table(); return
         self.cart.append({"product_id": pid, "name": p["name"], "qty": 1,
@@ -1412,7 +1542,9 @@ class SalesTab(QWidget):
 
     def _finish(self):
         if not self.cart:
-            QMessageBox.warning(self,"Carrinho Vazio","Adicione produtos."); return
+            AlertDialog.show_info(self, "Carrinho Vazio",
+                "Adicione produtos ao carrinho antes de finalizar.", "🛒")
+            return
         subtotal = sum(i["unit_price"]*i["qty"] for i in self.cart)
         disc = self.disc_spin.value(); total = subtotal*(1-disc/100)
         sale = {
@@ -1428,7 +1560,8 @@ class SalesTab(QWidget):
             p = self.dm.get_product_by_id(item["product_id"])
             if p: p["stock"] = max(0, p.get("stock",0) - item["qty"]); self.dm.update_product(p["id"],p)
         self.dm.add_sale(sale)
-        QMessageBox.information(self,"Venda Concluída",f"✅ Venda de {fmtR(total)} finalizada!")
+        AlertDialog.show_info(self, "Venda Concluída!",
+            f"Venda de {fmtR(total)} registrada com sucesso.", "✅")
         self._clear()
 
     def refresh(self):
@@ -1529,6 +1662,8 @@ class CustomersTab(QWidget):
         self.tbl.verticalHeader().setVisible(False); self.tbl.setShowGrid(False)
         self.tbl.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tbl.verticalHeader().setDefaultSectionSize(44)
+        self.tbl.horizontalHeader().setSectionResizeMode(5, QHeaderView.Fixed)
+        self.tbl.setColumnWidth(5, 92)
         cl.addWidget(self.tbl); lay.addWidget(card, 1)
 
     def refresh(self):
@@ -1541,13 +1676,15 @@ class CustomersTab(QWidget):
                                       c.get("email",""), c.get("city",""), ""]):
                 if col == 5: continue
                 self.tbl.setItem(r, col, QTableWidgetItem(v))
-            w = QWidget(); wl = QHBoxLayout(w); wl.setContentsMargins(4,2,4,2); wl.setSpacing(4)
+            w = QWidget(); wl = QHBoxLayout(w); wl.setContentsMargins(0,0,0,0); wl.setSpacing(6); wl.setAlignment(Qt.AlignCenter)
             cid = c["id"]
-            be = QPushButton("Editar"); be.setObjectName("btn_secondary"); be.setFixedSize(60,28)
+            be = QPushButton("✏️"); be.setObjectName("btn_icon_edit"); be.setFixedSize(28,28)
+            be.setToolTip("Editar cliente"); be.setCursor(Qt.PointingHandCursor)
             be.clicked.connect(lambda _, i=cid: self._edit(i))
-            bd = QPushButton("Excluir"); bd.setObjectName("btn_danger"); bd.setFixedSize(60,28)
+            bd = QPushButton("🗑"); bd.setObjectName("btn_icon_del"); bd.setFixedSize(28,28)
+            bd.setToolTip("Excluir cliente"); bd.setCursor(Qt.PointingHandCursor)
             bd.clicked.connect(lambda _, i=cid: self._del(i))
-            wl.addWidget(be); wl.addWidget(bd); wl.addStretch()
+            wl.addWidget(be); wl.addWidget(bd)
             self.tbl.setCellWidget(r, 5, w)
 
     def _add(self):
@@ -1558,18 +1695,17 @@ class CustomersTab(QWidget):
         if c: CustomerDialog(self, self.dm, c).exec_(); self.refresh()
 
     def _del(self, cid):
-        if QMessageBox.question(self,"Excluir","Excluir cliente?",
-                                QMessageBox.Yes|QMessageBox.No)==QMessageBox.Yes:
+        if ConfirmDialog.ask(self, "Excluir Cliente",
+                             "Tem certeza que deseja excluir este cliente?",
+                             "🗑️", danger=True):
             self.dm.delete_customer(cid); self.refresh()
 
 
-class CustomerDialog(QDialog):
+class CustomerDialog(ModernFormDialog):
     def __init__(self, parent, dm, customer=None):
-        super().__init__(parent); self.dm = dm; self.cust = customer
-        self.setWindowTitle("Novo Cliente" if not customer else "Editar Cliente")
-        self.setMinimumWidth(460); self.setModal(True)
-        lay = QVBoxLayout(self); lay.setContentsMargins(24,20,24,20); lay.setSpacing(14)
-        lay.addWidget(make_label("Dados do Cliente", 16, bold=True))
+        super().__init__(parent, min_width=460); self.dm = dm; self.cust = customer
+        self.add_title_bar("Novo Cliente" if not customer else "Editar Cliente")
+        lay = self.main_lay
         form = QFormLayout(); form.setSpacing(10)
         self.e_name  = QLineEdit(customer.get("name","") if customer else ""); self.e_name.setFixedHeight(38)
         self.e_phone = QLineEdit(customer.get("phone","") if customer else ""); self.e_phone.setFixedHeight(38)
@@ -1623,6 +1759,8 @@ class TrocasTab(QWidget):
         self.tbl.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tbl.verticalHeader().setVisible(False); self.tbl.setShowGrid(False)
         self.tbl.verticalHeader().setDefaultSectionSize(44)
+        self.tbl.horizontalHeader().setSectionResizeMode(5, QHeaderView.Fixed)
+        self.tbl.setColumnWidth(5, 128)
         cl.addWidget(self.tbl); lay.addWidget(card, 1)
 
     def refresh(self):
@@ -1639,19 +1777,22 @@ class TrocasTab(QWidget):
                 it = QTableWidgetItem(v)
                 if c == 4: it.setForeground(QColor(STATUS_COLORS.get(st, TEXT2)))
                 self.tbl.setItem(r, c, it)
-            w = QWidget(); wl = QHBoxLayout(w); wl.setContentsMargins(4,2,4,2); wl.setSpacing(4)
+            w = QWidget(); wl = QHBoxLayout(w); wl.setContentsMargins(0,0,0,0); wl.setSpacing(6); wl.setAlignment(Qt.AlignCenter)
             tid = t["id"]
-            bs = QPushButton("Status"); bs.setObjectName("btn_secondary"); bs.setFixedSize(54,28)
+            bs = QPushButton("↻"); bs.setObjectName("btn_icon_edit"); bs.setFixedSize(28,28)
+            bs.setToolTip("Avançar status"); bs.setCursor(Qt.PointingHandCursor)
             bs.clicked.connect(lambda _, i=tid: self._cycle_status(i))
-            bd = QPushButton("✕"); bd.setObjectName("btn_danger"); bd.setFixedSize(28,28)
+            bd = QPushButton("✕"); bd.setObjectName("btn_icon_del"); bd.setFixedSize(28,28)
+            bd.setToolTip("Remover registro"); bd.setCursor(Qt.PointingHandCursor)
             bd.clicked.connect(lambda _, i=tid: self._del(i))
+            wl.addWidget(bs)
             # Descarte button
             if st in ("Aguardando","Em Troca","Resolvido"):
-                bdes = QPushButton("🗑"); bdes.setObjectName("btn_danger"); bdes.setFixedSize(28,28)
-                bdes.setToolTip("Marcar como Descarte — cancela valor na venda original")
+                bdes = QPushButton("🗑"); bdes.setObjectName("btn_icon_warn"); bdes.setFixedSize(28,28)
+                bdes.setToolTip("Marcar como Descarte"); bdes.setCursor(Qt.PointingHandCursor)
                 bdes.clicked.connect(lambda _, i=tid: self._descarte(i))
                 wl.addWidget(bdes)
-            wl.addWidget(bs); wl.addWidget(bd); wl.addStretch()
+            wl.addWidget(bd)
             self.tbl.setCellWidget(r, 5, w)
 
     def _add(self):
@@ -1667,8 +1808,9 @@ class TrocasTab(QWidget):
         t["status"] = nxt; self.dm.save_trocas(trocas); self.refresh()
 
     def _descarte(self, tid):
-        if QMessageBox.question(self,"Descarte","Marcar como DESCARTE? Isso atualiza o valor da venda original.",
-                                QMessageBox.Yes|QMessageBox.No) != QMessageBox.Yes: return
+        if not ConfirmDialog.ask(self, "Marcar como Descarte",
+                                 "O valor deste item será removido\nda venda original automaticamente.",
+                                 "🗑️", danger=True, confirm_text="Descartar"): return
         trocas = self.dm.get_trocas(); t = next((x for x in trocas if x["id"]==tid),None)
         if not t: return
         t["status"] = "Descarte"; self.dm.save_trocas(trocas)
@@ -1684,21 +1826,22 @@ class TrocasTab(QWidget):
                     self.dm.save_sales(sales)
             except: pass
         self.refresh()
-        QMessageBox.information(self,"Descarte","Produto descartado.\nO valor foi removido da venda original.")
+        AlertDialog.show_info(self, "Descartado!",
+            "Produto descartado.\nO valor foi removido da venda original.", "✅")
 
     def _del(self, tid):
-        if QMessageBox.question(self,"Excluir","Excluir registro?",
-                                QMessageBox.Yes|QMessageBox.No)==QMessageBox.Yes:
+        if ConfirmDialog.ask(self, "Remover Registro",
+                             "Deseja remover este registro de troca?",
+                             "🗑️", danger=True):
             t = [x for x in self.dm.get_trocas() if x["id"]!=tid]
             self.dm.save_trocas(t); self.refresh()
 
 
-class TrocaDialog(QDialog):
+class TrocaDialog(ModernFormDialog):
     def __init__(self, parent, dm):
-        super().__init__(parent); self.dm = dm
-        self.setWindowTitle("Registrar Troca / Avaria"); self.setModal(True); self.setMinimumWidth(420)
-        lay = QVBoxLayout(self); lay.setContentsMargins(24,20,24,20); lay.setSpacing(14)
-        lay.addWidget(make_label("Novo Registro de Troca", 16, bold=True))
+        super().__init__(parent, min_width=420); self.dm = dm
+        self.add_title_bar("Registrar Troca / Avaria")
+        lay = self.main_lay
         form = QFormLayout(); form.setSpacing(10)
         self.e_prod = QLineEdit(); self.e_prod.setFixedHeight(38); self.e_prod.setPlaceholderText("Nome do produto")
         self.e_qty  = QSpinBox(); self.e_qty.setRange(1,999); self.e_qty.setFixedHeight(38)
@@ -1748,6 +1891,8 @@ class FaltasTab(QWidget):
         self.tbl.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tbl.verticalHeader().setVisible(False); self.tbl.setShowGrid(False)
         self.tbl.verticalHeader().setDefaultSectionSize(44)
+        self.tbl.horizontalHeader().setSectionResizeMode(3, QHeaderView.Fixed)
+        self.tbl.setColumnWidth(3, 56)
         cl.addWidget(self.tbl); lay.addWidget(card, 1)
 
     def refresh(self):
@@ -1761,11 +1906,12 @@ class FaltasTab(QWidget):
                 it = QTableWidgetItem(v)
                 if c == 1: it.setForeground(QColor(URG.get(urg,TEXT2)))
                 self.tbl.setItem(r, c, it)
-            w = QWidget(); wl = QHBoxLayout(w); wl.setContentsMargins(4,2,4,2); wl.setSpacing(4)
+            w = QWidget(); wl = QHBoxLayout(w); wl.setContentsMargins(6,4,6,4); wl.setSpacing(4)
             fid = f.get("id","")
-            bd = QPushButton("Remover"); bd.setObjectName("btn_danger"); bd.setFixedSize(72,28)
+            bd = QPushButton("✕"); bd.setObjectName("btn_icon_del"); bd.setFixedSize(28,28)
+            bd.setToolTip("Remover item"); bd.setCursor(Qt.PointingHandCursor)
             bd.clicked.connect(lambda _, i=fid: self._del(i))
-            wl.addWidget(bd); wl.addStretch()
+            wl.addWidget(bd)
             self.tbl.setCellWidget(r, 3, w)
 
     def _add(self):
@@ -1776,12 +1922,11 @@ class FaltasTab(QWidget):
         self.dm.save_faltas(faltas); self.refresh()
 
 
-class FaltaDialog(QDialog):
+class FaltaDialog(ModernFormDialog):
     def __init__(self, parent, dm):
-        super().__init__(parent); self.dm = dm
-        self.setWindowTitle("Adicionar à Lista de Faltas"); self.setModal(True); self.setMinimumWidth(380)
-        lay = QVBoxLayout(self); lay.setContentsMargins(24,20,24,20); lay.setSpacing(14)
-        lay.addWidget(make_label("Novo Item em Falta", 16, bold=True))
+        super().__init__(parent, min_width=380); self.dm = dm
+        self.add_title_bar("Novo Item em Falta")
+        lay = self.main_lay
         form = QFormLayout(); form.setSpacing(10)
         self.e_name = QLineEdit(); self.e_name.setFixedHeight(38)
         self.e_urg  = QComboBox(); self.e_urg.setFixedHeight(38)
@@ -1889,6 +2034,8 @@ class UsersTab(QWidget):
         self.tbl.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tbl.verticalHeader().setVisible(False); self.tbl.setShowGrid(False)
         self.tbl.verticalHeader().setDefaultSectionSize(44)
+        self.tbl.horizontalHeader().setSectionResizeMode(3, QHeaderView.Fixed)
+        self.tbl.setColumnWidth(3, 92)
         cl.addWidget(self.tbl); lay.addWidget(card, 1)
 
     def refresh(self):
@@ -1901,13 +2048,15 @@ class UsersTab(QWidget):
                 it = QTableWidgetItem(v)
                 if c == 2: it.setForeground(QColor(ORANGE if u.get("role")=="admin" else TEXT2))
                 self.tbl.setItem(r, c, it)
-            w = QWidget(); wl = QHBoxLayout(w); wl.setContentsMargins(4,2,4,2); wl.setSpacing(4)
+            w = QWidget(); wl = QHBoxLayout(w); wl.setContentsMargins(0,0,0,0); wl.setSpacing(6); wl.setAlignment(Qt.AlignCenter)
             uid = u["id"]
-            be = QPushButton("Editar"); be.setObjectName("btn_secondary"); be.setFixedSize(60,28)
+            be = QPushButton("✏️"); be.setObjectName("btn_icon_edit"); be.setFixedSize(28,28)
+            be.setToolTip("Editar usuário"); be.setCursor(Qt.PointingHandCursor)
             be.clicked.connect(lambda _, i=uid: self._edit(i))
-            bd = QPushButton("Excluir"); bd.setObjectName("btn_danger"); bd.setFixedSize(60,28)
+            bd = QPushButton("🗑"); bd.setObjectName("btn_icon_del"); bd.setFixedSize(28,28)
+            bd.setToolTip("Excluir usuário"); bd.setCursor(Qt.PointingHandCursor)
             bd.clicked.connect(lambda _, i=uid: self._del(i))
-            wl.addWidget(be); wl.addWidget(bd); wl.addStretch()
+            wl.addWidget(be); wl.addWidget(bd)
             self.tbl.setCellWidget(r, 3, w)
 
     def _add(self): UserDialog(self, self.dm).exec_(); self.refresh()
@@ -1915,19 +2064,21 @@ class UsersTab(QWidget):
         u = next((x for x in self.dm.get_users() if x["id"]==uid),None)
         if u: UserDialog(self, self.dm, u).exec_(); self.refresh()
     def _del(self, uid):
-        if uid == "admin-fixed": QMessageBox.warning(self,"Protegido","Não é possível excluir este usuário."); return
-        if QMessageBox.question(self,"Excluir","Excluir usuário?",
-                                QMessageBox.Yes|QMessageBox.No)==QMessageBox.Yes:
+        if uid == "admin-fixed":
+            AlertDialog.show_info(self, "Protegido",
+                "O administrador principal não pode ser excluído.", "🔒")
+            return
+        if ConfirmDialog.ask(self, "Excluir Usuário",
+                             "Tem certeza que deseja excluir este usuário?",
+                             "🗑️", danger=True):
             self.dm.delete_user(uid); self.refresh()
 
 
-class UserDialog(QDialog):
+class UserDialog(ModernFormDialog):
     def __init__(self, parent, dm, user=None):
-        super().__init__(parent); self.dm = dm; self.usr = user
-        self.setWindowTitle("Novo Usuário" if not user else "Editar Usuário")
-        self.setModal(True); self.setMinimumWidth(400)
-        lay = QVBoxLayout(self); lay.setContentsMargins(24,20,24,20); lay.setSpacing(14)
-        lay.addWidget(make_label("Dados do Usuário", 16, bold=True))
+        super().__init__(parent, min_width=400); self.dm = dm; self.usr = user
+        self.add_title_bar("Novo Usuário" if not user else "Editar Usuário")
+        lay = self.main_lay
         form = QFormLayout(); form.setSpacing(10)
         self.e_name = QLineEdit(user.get("name","") if user else ""); self.e_name.setFixedHeight(38)
         self.e_user = QLineEdit(user.get("username","") if user else ""); self.e_user.setFixedHeight(38)
@@ -2214,12 +2365,11 @@ class BincIATab(QWidget):
 # ═══════════════════════════════════════════════════════════════════
 #  SETTINGS DIALOG
 # ═══════════════════════════════════════════════════════════════════
-class SettingsDialog(QDialog):
+class SettingsDialog(ModernFormDialog):
     def __init__(self, parent, dm):
-        super().__init__(parent); self.dm = dm
-        self.setWindowTitle("Configurações"); self.setModal(True); self.setMinimumWidth(480)
-        lay = QVBoxLayout(self); lay.setContentsMargins(28,24,28,24); lay.setSpacing(16)
-        lay.addWidget(make_label("Configurações do Sistema", 18, bold=True))
+        super().__init__(parent, min_width=480); self.dm = dm
+        self.add_title_bar("Configurações do Sistema")
+        lay = self.main_lay
         s = dm.get_settings()
         form = QFormLayout(); form.setSpacing(12)
         self.e_store = QLineEdit(s.get("nome_loja","MOTO PEÇAS & MECÂNICA")); self.e_store.setFixedHeight(38)
@@ -2243,7 +2393,7 @@ class SettingsDialog(QDialog):
         s["cnpj"]      = self.e_cnpj.text().strip()
         s["meu_whatsapp"] = self.e_wa.text().strip()
         self.dm.save_settings(s)
-        QMessageBox.information(self,"Salvo","Configurações salvas.")
+        AlertDialog.show_info(self, "Salvo!", "Configurações salvas com sucesso.", "✅")
         self.accept()
 
 
